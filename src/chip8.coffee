@@ -17,6 +17,8 @@ Chip8 = ->
   stackPointer = 0
 
   waitingForKey = false
+  keyWaitCallback = ->
+    waitingForKey = false
 
 
   load = (romData) ->
@@ -57,6 +59,11 @@ Chip8 = ->
   getStackPointer = -> stackPointer
   getStack = -> stack
 
+  keyboard = null
+
+  setKeyboard = (keyboard_) ->
+    keyboard = keyboard_
+
 
   clearScreen = ->
     for i in [0...video.length]
@@ -83,6 +90,8 @@ Chip8 = ->
 
 
   tick = ->
+    return if waitingForKey
+
     instructionHi = memory[programCounter]
     instructionLo = memory[programCounter + 1]
     X = instructionHi & 0x0F
@@ -207,6 +216,18 @@ Chip8 = ->
                 V[0xF] = 1
             line <<= 1
 
+      when 0xE0
+        switch instructionLo
+          when 0x9E
+            keyState = keyboard.getState V[X]
+            if keyState == 1
+              programCounter += 2
+
+          when 0xA1
+            keyState = keyboard.getState V[X]
+            if keyState == 0
+              programCounter += 2
+
       when 0xF0
         switch instructionLo
           when 0x07
@@ -214,6 +235,7 @@ Chip8 = ->
 
           when 0x0A
             waitingForKey = true
+            keyboard.waitForKey keyWaitCallback
 
           when 0x15
             delayTimer = V[X]
@@ -228,11 +250,6 @@ Chip8 = ->
           when 0x29
             I = V[X] * 5
 
-          # save registers
-          when 0x55
-            for i in [0...X]
-              memory[I + i] = V[i]
-
           # bcd
           when 0x33
             value = V[X]
@@ -243,6 +260,11 @@ Chip8 = ->
 
             value = (value / 10) | 0
             memory[I + 0] = value % 10
+
+          # save registers
+          when 0x55
+            for i in [0...X]
+              memory[I + i] = V[i]
 
           # restore registers
           when 0x65
@@ -263,6 +285,7 @@ Chip8 = ->
     getProgramCounter
     getStackPointer
     getStack
+    setKeyboard
   }
 
 window.Chip8 = Chip8

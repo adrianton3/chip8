@@ -19,7 +19,11 @@ app.controller 'AssemblerController', ($scope) ->
 
   assembler = Chip8Assembler()
 
+  keyboard = Chip8Keyboard()
+  (document.getElementById 'container').appendChild keyboard.getHtml()
+
   chip8 = Chip8()
+  chip8.setKeyboard keyboard
 
 
   onChange = (text) ->

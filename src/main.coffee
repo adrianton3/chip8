@@ -4,9 +4,13 @@
 
 { con2d, videoBuffer } = setupCanvas()
 
-chip8 = Chip8()
+keyboard = Chip8Keyboard()
+(document.getElementById 'container').appendChild keyboard.getHtml()
 
-(loadRom 'MAZE').then (romData) ->
+chip8 = Chip8()
+chip8.setKeyboard keyboard
+
+(loadRom 'WIPEOFF').then (romData) ->
   chip8.load romData
 
   TICKS_PER_FRAME = 1

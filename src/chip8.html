@@ -2,12 +2,17 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
+    <link href='http://fonts.googleapis.com/css?family=Coda' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="style.css">
     <title>Chip8 emulator</title>
 </head>
 <body>
-<canvas id="can" width="64" height="32"></canvas>
+    <div id="container">
+        <canvas id="can" class="display" width="64" height="32"></canvas>
+    </div>
+
     <script src="chip8.js"></script>
+    <script src="keyboard.js"></script>
 
     <script src="common.js"></script>
     <script src="main.js"></script>

@@ -32,9 +32,9 @@ draw = (video, videoBuffer, con2d) ->
       videoBuffer.data[i4 + 1] = 255
       videoBuffer.data[i4 + 2] = 255
     else
-      videoBuffer.data[i4 + 0] = 0
-      videoBuffer.data[i4 + 1] = 0
-      videoBuffer.data[i4 + 2] = 0
+      videoBuffer.data[i4 + 0] = 0xC
+      videoBuffer.data[i4 + 1] = 0xD
+      videoBuffer.data[i4 + 2] = 0x8
 
     videoBuffer.data[i4 + 3] = 255
 
