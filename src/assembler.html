@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <title>Chip8 assembler</title>
+</head>
+<body ng-app="Assembler">
+    <div ng-controller="AssemblerController as assemblerController">
+        <canvas id="can" width="64" height="32"></canvas>
+
+        <div>
+            <button
+                ng-click="assemblerController.start()"
+                ng-disabled="assemblerController.running"
+            >Start</button>
+
+            <button
+                ng-click="assemblerController.reset()"
+
+            >Reset</button>
+
+            <button
+                ng-click="assemblerController.step()"
+                ng-disabled="assemblerController.running"
+            >Step</button>
+        </div>
+
+        <div class="mono">
+            <div>PC: {{assemblerController.state.programCounter}}</div>
+            <div>Registers: {{assemblerController.state.registers}}</div>
+            <div>SP: {{assemblerController.state.stackPointer}}</div>
+            <div>Stack: {{assemblerController.state.stack}}</div>
+        </div>
+
+        <div id="editor"></div>
+
+        <div>Status: {{assemblerController.assemblerStatus}}</div>
+    </div>
+
+    <script src="../lib/ace/ace.js"></script>
+    <script src="../lib/ace/theme-monokai.js"></script>
+
+    <script src="../lib/angular.min.js"></script>
+
+    <script src="chip8.js"></script>
+    <script src="assembler.js"></script>
+
+    <script src="common.js"></script>
+    <script src="main-assembler.js"></script>
+</body>
+</html>

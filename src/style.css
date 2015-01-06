@@ -1,0 +1,16 @@
+canvas {
+    border: 1px solid black;
+    width: 512px;
+    height: 256px;
+    image-rendering: pixelated;
+}
+
+#editor {
+    position: relative;
+    width: 512px;
+    height: 256px;
+}
+
+.mono {
+    font-family: Consolas, Inconsolanta, "Lucida Console", Monaco, monospace;
+}

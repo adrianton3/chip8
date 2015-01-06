@@ -1,0 +1,3 @@
+.idea
+src/*.js
+test/spec/*.js
