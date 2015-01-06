@@ -6,7 +6,7 @@
 
 chip8 = Chip8()
 
-(loadRom 'UFO').then (romData) ->
+(loadRom 'MAZE').then (romData) ->
   chip8.load romData
 
   TICKS_PER_FRAME = 1

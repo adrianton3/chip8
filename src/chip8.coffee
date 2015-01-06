@@ -164,6 +164,21 @@ Chip8 = ->
             V[0xF] = +(V[X] > V[Y])
             V[X] -= V[Y]
 
+          # shr (does not use vY)
+          when 0x06
+            V[0xF] = V[X] & 0x01
+            V[X] >>= 1
+
+          # vX = vY - vX; vF = 1 if not borrow
+          when 0x07
+            V[0xF] = +(V[Y] > V[X])
+            V[X] = V[Y] - V[X]
+
+          # shl (does not use vY)
+          when 0x0E
+            V[0xF] = V[X] & 0x80
+            V[X] <<= 1
+
       # skip if vX != vY
       when 0x90
         if V[X] != V[Y]
@@ -176,6 +191,10 @@ Chip8 = ->
       # jump to NNN + v0
       when 0xB0
         programCounter = (instruction & 0x0FFF) + V[0]
+
+      # rnd
+      when 0xC0
+        V[X] = ((Math.random() * 256) | 0) & instructionLo
 
       # print sprite
       when 0xD0
@@ -213,6 +232,17 @@ Chip8 = ->
           when 0x55
             for i in [0...X]
               memory[I + i] = V[i]
+
+          # bcd
+          when 0x33
+            value = V[X]
+            memory[I + 2] = value % 10
+
+            value = (value / 10) | 0
+            memory[I + 1] = value % 10
+
+            value = (value / 10) | 0
+            memory[I + 0] = value % 10
 
           # restore registers
           when 0x65
