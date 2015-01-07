@@ -2,7 +2,11 @@
 
 { setupCanvas, loadRom, draw } = window.Chip8Common
 
-{ con2d, videoBuffer } = setupCanvas()
+#{ con2d, videoBuffer } = setupCanvas()
+
+{ initContext, draw } = Chip8Renderer()
+
+initContext document.getElementById 'can'
 
 keyboard = Chip8Keyboard()
 (document.getElementById 'container').appendChild keyboard.getHtml()
@@ -19,7 +23,8 @@ chip8.setKeyboard keyboard
     for i in [0...TICKS_PER_FRAME]
       chip8.tick()
 
-    draw chip8.getVideo(), videoBuffer, con2d
+    draw()
+#    draw chip8.getVideo(), videoBuffer, con2d
 
     requestAnimationFrame mainLoop
     return
