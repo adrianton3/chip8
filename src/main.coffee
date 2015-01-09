@@ -2,9 +2,7 @@
 
 { setupCanvas, loadRom, draw } = window.Chip8Common
 
-#{ con2d, videoBuffer } = setupCanvas()
-
-{ initContext, draw } = Chip8Renderer()
+{ initContext, draw, setVideoData } = Chip8Renderer()
 
 initContext document.getElementById 'can'
 
@@ -14,7 +12,7 @@ keyboard = Chip8Keyboard()
 chip8 = Chip8()
 chip8.setKeyboard keyboard
 
-(loadRom 'WIPEOFF').then (romData) ->
+(loadRom 'MAZE').then (romData) ->
   chip8.load romData
 
   TICKS_PER_FRAME = 1
@@ -23,8 +21,8 @@ chip8.setKeyboard keyboard
     for i in [0...TICKS_PER_FRAME]
       chip8.tick()
 
+    setVideoData chip8.getVideo()
     draw()
-#    draw chip8.getVideo(), videoBuffer, con2d
 
     requestAnimationFrame mainLoop
     return
