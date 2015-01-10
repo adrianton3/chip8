@@ -48,3 +48,42 @@ body {
 .keyboard {
     display: inline-block;
 }
+
+.controls {
+    margin: 4px 0 4px 0;
+}
+
+.controls > button {
+    width: 64px;
+    height: 22px;
+    padding: 0 0 2px 0;
+    border-radius: 2px;
+    outline: none;
+    color: white;
+    background-color: hsl(10, 90%, 36%);
+    border-style: solid;
+    border-top-color: hsl(10, 90%, 46%);
+    border-top-width: 1px;
+    border-bottom-color: hsl(10, 90%, 26%);
+    border-bottom-width: 1px;
+    border-left-width: 0;
+    border-right-width: 0;
+    transition: background-color 120ms;
+}
+
+.controls > button:hover {
+    background-color: hsl(10, 100%, 53%);
+    transition: background-color 120ms;
+}
+
+.state {
+    margin: 8px 0 12px 0;
+}
+
+td {
+    padding-left: 0;
+}
+
+.status {
+    margin-top: 4px;
+}

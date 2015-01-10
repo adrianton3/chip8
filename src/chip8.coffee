@@ -19,6 +19,7 @@ Chip8 = ->
   waitingForKey = false
   keyWaitCallback = ->
     waitingForKey = false
+    return
 
 
   load = (romData) ->
@@ -27,6 +28,20 @@ Chip8 = ->
 
     # calling it here for now
     initChars()
+    return
+
+
+  reset = ->
+    soundTimer = 0
+    delayTimer = 0
+
+    programCounter = 0x200
+    I = 0
+    stackPointer = 0
+
+    video[i] = 0 for i in [0...WIDTH * HEIGHT]
+    V[i] = 0 for i in [0...16]
+    stack[i] = 0 for i in [0...16]
     return
 
 
@@ -58,11 +73,13 @@ Chip8 = ->
   getProgramCounter = -> programCounter
   getStackPointer = -> stackPointer
   getStack = -> stack
+  getI = -> I
 
   keyboard = null
 
   setKeyboard = (keyboard_) ->
     keyboard = keyboard_
+    return
 
 
   clearScreen = ->
@@ -279,12 +296,14 @@ Chip8 = ->
   {
     tick
     load
+    reset
     clearScreen
     getVideo
     getRegisters
     getProgramCounter
     getStackPointer
     getStack
+    getI
     setKeyboard
   }
 

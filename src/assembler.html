@@ -9,10 +9,10 @@
 <body ng-app="Assembler">
     <div ng-controller="AssemblerController as assemblerController">
         <div id="container">
-            <canvas id="can" class="display" width="64" height="32"></canvas>
+            <canvas id="can" class="display" width="512" height="256"></canvas>
         </div>
 
-        <div>
+        <div class="controls">
             <button
                 ng-click="assemblerController.start()"
                 ng-disabled="assemblerController.running"
@@ -29,16 +29,19 @@
             >Step</button>
         </div>
 
-        <div class="mono">
-            <div>PC: {{assemblerController.state.programCounter}}</div>
-            <div>Registers: {{assemblerController.state.registers}}</div>
-            <div>SP: {{assemblerController.state.stackPointer}}</div>
-            <div>Stack: {{assemblerController.state.stack}}</div>
+        <div class="state mono">
+            <table>
+                <tr><td>PC:</td><td>{{assemblerController.state.programCounter}}</td></tr>
+                <tr><td>SP:</td><td>{{assemblerController.state.stackPointer}}</td></tr>
+                <tr><td>I:</td><td>{{assemblerController.state.I}}</td></tr>
+                <tr><td>Registers:</td><td>{{assemblerController.state.registers}}</td></tr>
+                <tr><td>Stack:</td><td>{{assemblerController.state.stack}}</td></tr>
+            </table>
         </div>
 
         <div id="editor"></div>
 
-        <div>Status: {{assemblerController.assemblerStatus}}</div>
+        <div class="status mono">Status: {{assemblerController.assemblerStatus}}</div>
     </div>
 
     <script src="../lib/ace/ace.js"></script>
@@ -48,6 +51,7 @@
 
     <script src="chip8.js"></script>
     <script src="keyboard.js"></script>
+    <script src="renderer.js"></script>
     <script src="assembler.js"></script>
 
     <script src="common.js"></script>

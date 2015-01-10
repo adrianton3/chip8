@@ -3,13 +3,17 @@
 app = angular.module 'Assembler', []
 
 app.controller 'AssemblerController', ($scope) ->
-  { setupCanvas, draw } = window.Chip8Common
+  { initContext, draw, setVideoData } = Chip8Renderer()
+
+  initContext document.getElementById 'can'
 
   TICKS_PER_FRAME = 1
 
   self = @
 
   rafId = null
+
+  editor = null
 
   @running = false
 
@@ -32,10 +36,9 @@ app.controller 'AssemblerController', ($scope) ->
       $scope.$apply()
     else
       try
-        program = assembler.assemble text
+        assembler.assemble text
         self.assemblerStatus = 'OK'
         $scope.$apply()
-        self.loadProgram program
       catch ex
         self.assemblerStatus = ex.message
         $scope.$apply()
@@ -52,12 +55,31 @@ app.controller 'AssemblerController', ($scope) ->
   setupEditor()
 
 
+  getState = ->
+    programCounter = chip8.getProgramCounter()
+    stackPointer = chip8.getStackPointer()
+    I = chip8.getI()
+    registers = Array::slice.call chip8.getRegisters(), 0
+    stack = Array::slice.call chip8.getStack(), stackPointer
+
+    {
+      programCounter
+      registers
+      stackPointer
+      I
+      stack
+    }
+
+
   @start = ->
-    mainLoop = ->
+    mainLoop = =>
       for i in [0...TICKS_PER_FRAME]
         chip8.tick()
 
-      draw chip8.getVideo(), videoBuffer, con2d
+      setVideoData chip8.getVideo()
+      @state = getState()
+      $scope.$apply() if not $scope.$$phase
+      draw()
 
       rafId = requestAnimationFrame mainLoop
       return
@@ -68,32 +90,39 @@ app.controller 'AssemblerController', ($scope) ->
 
   @stop = ->
     @running = false
-    cancelRequestAnimationFrame rafId
+    cancelAnimationFrame rafId
+    return
 
 
-  @reset = -> chip8.reset()
+  @reset = ->
+    @stop()
+    text = editor.getValue()
+    if text.length
+      try
+        program = assembler.assemble text
+        self.assemblerStatus = 'OK'
+        self.loadProgram program
+      catch ex
+        self.assemblerStatus = ex.message
+
+    chip8.reset()
+    @state = getState()
+    setVideoData chip8.getVideo()
+    draw()
+
+
+  @reset()
+
+
   @loadProgram = chip8.load
-
-
-  getState = ->
-    programCounter = chip8.getProgramCounter()
-    registers = Array::slice.call chip8.getRegisters(), 0
-    stackPointer = chip8.getStackPointer()
-    stack = Array::slice.call chip8.getStack(), stackPointer
-
-    {
-      programCounter
-      registers
-      stackPointer
-      stack
-    }
 
 
   @step = ->
     chip8.tick()
     @state = getState()
-    draw chip8.getVideo(), videoBuffer, con2d
+    setVideoData chip8.getVideo()
+    draw()
+    return
 
 
-  { con2d, videoBuffer } = setupCanvas()
   return
