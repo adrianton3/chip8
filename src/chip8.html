@@ -6,10 +6,20 @@
     <link rel="stylesheet" type="text/css" href="style.css">
     <title>Chip8 emulator</title>
 </head>
-<body>
+<body ng-app="Chip8">
     <div id="container">
         <canvas id="can" class="display" width="512" height="256"></canvas>
     </div>
+
+    <div class="drop-menu" ng-controller="Chip8Controller as chip8Controller">
+        <select
+            ng-options="romName for romName in chip8Controller.romNames"
+            ng-model="chip8Controller.selectedRomName"
+            ng-change="chip8Controller.changeRom()"
+        ></select>
+    </div>
+
+    <script src="../lib/angular.min.js"></script>
 
     <script src="chip8.js"></script>
     <script src="keyboard.js"></script>

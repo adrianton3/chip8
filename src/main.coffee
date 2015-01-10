@@ -1,31 +1,56 @@
 'use strict'
 
-{ setupCanvas, loadRom, draw } = window.Chip8Common
+app = angular.module 'Chip8', []
 
-{ initContext, draw, setVideoData } = Chip8Renderer()
+app.controller 'Chip8Controller', [
+  '$scope'
+  '$http'
+  (
+    $scope
+    $http
+  ) ->
+    { initContext, draw, setVideoData } = Chip8Renderer()
 
-initContext document.getElementById 'can'
+    @selectedRomName = 'MAZE'
+    @romNames = [
+      '15PUZZLE', 'BLINKY', 'BLITZ', 'BRIX', 'CONNECT4', 'GUESS', 'HIDDEN', 'INVADERS',
+      'KALEID', 'MAZE', 'MERLIN', 'MISSILE', 'PONG', 'PONG2', 'PUZZLE', 'SYZYGY',
+      'TANK', 'TETRIS', 'TICTAC', 'UFO', 'VBRIX', 'VERS', 'WIPEOFF', 'ZERO'
+    ]
 
-keyboard = Chip8Keyboard()
-(document.getElementById 'container').appendChild keyboard.getHtml()
 
-chip8 = Chip8()
-chip8.setKeyboard keyboard
+    @changeRom = ->
+      ($http.get "../roms/#{@selectedRomName}", { responseType: 'arraybuffer' })
+        .success (data) =>
+          @chip8.load new Uint8Array data
+          @chip8.reset()
 
-(loadRom 'MAZE').then (romData) ->
-  chip8.load romData
 
-  TICKS_PER_FRAME = 1
+    @init = ->
+      initContext document.getElementById 'can'
 
-  mainLoop = ->
-    for i in [0...TICKS_PER_FRAME]
-      chip8.tick()
+      keyboard = Chip8Keyboard()
+      (document.getElementById 'container').appendChild keyboard.getHtml()
 
-    setVideoData chip8.getVideo()
-    draw()
+      @chip8 = Chip8()
+      @chip8.setKeyboard keyboard
 
-    requestAnimationFrame mainLoop
-    return
+    @init()
 
-  mainLoop()
-  return
+    @changeRom()
+      .then =>
+        TICKS_PER_FRAME = 10
+
+        mainLoop = =>
+          for i in [0...TICKS_PER_FRAME]
+            @chip8.tick()
+
+          setVideoData @chip8.getVideo()
+          draw()
+
+          requestAnimationFrame mainLoop
+          return
+
+        mainLoop()
+        return
+  ]

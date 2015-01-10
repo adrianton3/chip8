@@ -101,3 +101,21 @@ td {
     margin-top: 4px;
     overflow: auto;
 }
+
+.drop-menu select {
+    background-color: hsl(10, 90%, 36%);
+    border-radius: 2px;
+    font-family: sans-serif;
+    color: white;
+    width: 100px;
+    border: none;
+    padding: 4px;
+    margin-top: 10px;
+    outline: none;
+    transition: background-color 120ms;
+}
+
+.drop-menu select:hover {
+    background-color: hsl(10, 100%, 53%);
+    transition: background-color 120ms;
+}
