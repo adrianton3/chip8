@@ -12,36 +12,40 @@
             <canvas id="can" class="display" width="512" height="256"></canvas>
         </div>
 
-        <div class="controls">
-            <button
-                ng-click="assemblerController.start()"
-                ng-disabled="assemblerController.running"
-            >Start</button>
+        <div class="editor-container">
+            <div id="editor"></div>
 
-            <button
-                ng-click="assemblerController.reset()"
-
-            >Reset</button>
-
-            <button
-                ng-click="assemblerController.step()"
-                ng-disabled="assemblerController.running"
-            >Step</button>
+            <div class="status mono">Status: {{assemblerController.assemblerStatus}}</div>
         </div>
 
-        <div class="state mono">
-            <table>
-                <tr><td>PC:</td><td>{{assemblerController.state.programCounter}}</td></tr>
-                <tr><td>SP:</td><td>{{assemblerController.state.stackPointer}}</td></tr>
-                <tr><td>I:</td><td>{{assemblerController.state.I}}</td></tr>
-                <tr><td>Registers:</td><td>{{assemblerController.state.registers}}</td></tr>
-                <tr><td>Stack:</td><td>{{assemblerController.state.stack}}</td></tr>
+        <div class="editor-controls">
+            <div class="controls">
+                <button
+                    ng-click="assemblerController.start()"
+                    ng-disabled="assemblerController.running"
+                >Start</button>
+
+                <button
+                    ng-click="assemblerController.reset()"
+
+                >Reset</button>
+
+                <button
+                    ng-click="assemblerController.step()"
+                    ng-disabled="assemblerController.running"
+                >Step</button>
+            </div>
+
+            <table class="state mono">
+                    <tr><td>PC:</td><td>{{assemblerController.state.programCounter}}</td></tr>
+                    <tr><td>SP:</td><td>{{assemblerController.state.stackPointer}}</td></tr>
+                    <tr><td>I:</td><td>{{assemblerController.state.I}}</td></tr>
+                    <tr><td>Registers:</td><td>{{assemblerController.state.registers}}</td></tr>
+                    <tr><td>Stack:</td><td>{{assemblerController.state.stack}}</td></tr>
             </table>
+
         </div>
 
-        <div id="editor"></div>
-
-        <div class="status mono">Status: {{assemblerController.assemblerStatus}}</div>
     </div>
 
     <script src="../lib/ace/ace.js"></script>

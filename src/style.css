@@ -12,9 +12,9 @@ body {
 }
 
 #editor {
-    position: relative;
     width: 512px;
     height: 256px;
+    font-size: 18px;
 }
 
 .mono {
@@ -47,6 +47,19 @@ body {
 
 .keyboard {
     display: inline-block;
+}
+
+.editor-container {
+    display: inline-block;
+    float: left;
+    margin-top: 64px;
+    max-width: 512px;
+}
+
+.editor-controls {
+    display: inline-block;
+    margin-left: 22px;
+    margin-top: 62px;
 }
 
 .controls {
@@ -86,4 +99,5 @@ td {
 
 .status {
     margin-top: 4px;
+    overflow: auto;
 }
