@@ -224,6 +224,7 @@ Chip8 = ->
 
       # print sprite
       when 0xD0
+        V[0xF] = 0
         height = instructionLo & 0x0F
         for i in [0...height]
           line = memory[I + i]
