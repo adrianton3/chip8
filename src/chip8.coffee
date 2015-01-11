@@ -112,6 +112,9 @@ Chip8 = ->
     Y = instructionLo >> 4
     instruction = (instructionHi << 8) | instructionLo
 
+    delayTimer-- if delayTimer > 0
+    soundTimer-- if soundTimer > 0
+
     programCounter += 2
     switch 0xF0 & instructionHi
       when 0x00
