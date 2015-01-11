@@ -17,9 +17,6 @@ Chip8 = ->
   stackPointer = 0
 
   waitingForKey = false
-  keyWaitCallback = ->
-    waitingForKey = false
-    return
 
 
   load = (romData) ->
@@ -252,7 +249,9 @@ Chip8 = ->
 
           when 0x0A
             waitingForKey = true
-            keyboard.waitForKey keyWaitCallback
+            keyboard.waitForKey (key) ->
+              waitingForKey = false
+              V[X] = key
 
           when 0x15
             delayTimer = V[X]

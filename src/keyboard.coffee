@@ -27,7 +27,7 @@ Chip8Keyboard = ->
     button.addEventListener 'mousedown', ->
       state[key] = 1
       if waitCallback?
-        waitCallback()
+        waitCallback key
         waitCallback = null
       return
 
