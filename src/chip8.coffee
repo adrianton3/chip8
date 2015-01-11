@@ -282,12 +282,12 @@ Chip8 = ->
 
           # save registers
           when 0x55
-            for i in [0...X]
+            for i in [0..X]
               memory[I + i] = V[i]
 
           # restore registers
           when 0x65
-            for i in [0...X]
+            for i in [0..X]
               V[i] = memory[I + i]
 
       else
