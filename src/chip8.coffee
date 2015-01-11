@@ -118,13 +118,13 @@ Chip8 = ->
     programCounter += 2
     switch 0xF0 & instructionHi
       when 0x00
-        switch 0x0F & instructionLo
+        switch instructionLo
           # clear screen
-          when 0x00
+          when 0xE0
             clearScreen()
 
           # return from subroutine
-          when 0x0E
+          when 0xEE
             stackPointer--
             programCounter = stack[stackPointer]
 
