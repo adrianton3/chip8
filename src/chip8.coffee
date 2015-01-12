@@ -97,10 +97,10 @@ Chip8 = ->
       j += WIDTH
 
     address = (i * WIDTH) + j
-
+    oldState = video[address]
     video[address] ^= 1
 
-    not video[address]
+    oldState and not video[address]
 
 
   tick = ->
