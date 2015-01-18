@@ -2,7 +2,8 @@
 
 describe 'assembler', ->
   assembler = window.Chip8Assembler()
-  assemble = assembler.assemble
+  { assemble } = assembler
+
 
   splitWords = (words) ->
     bytes = []
@@ -14,7 +15,7 @@ describe 'assembler', ->
   describe 'labels', ->
     it 'throws an error if a label is declared twice', ->
       expect -> assemble 'label1:\nlabel1:'
-      .toThrow Error "label 'label1' declared twice"
+      .toThrow Error "label 'label1' already declared"
 
 
   describe 'jump', ->
@@ -35,3 +36,11 @@ describe 'assembler', ->
     it 'encodes', ->
       expect assemble 'sei vA 31'
       .toEqual splitWords [0x3000 | 0x0A00 | 31]
+
+    it 'throws an exception if register is missing', ->
+      expect -> assemble 'sei v 31'
+      .toThrow Error 'Expected a register'
+
+    it 'throws an exception if value is missing', ->
+      expect -> assemble 'sei v0'
+      .toThrow Error 'Expected a byte'
