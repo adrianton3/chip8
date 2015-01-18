@@ -20,8 +20,6 @@ app.controller 'AssemblerController', ($scope) ->
 
   @state = null
 
-  @assemblerStatus = 'OK'
-
   assembler = Chip8Assembler()
 
   keyboard = Chip8Keyboard()
@@ -33,32 +31,21 @@ app.controller 'AssemblerController', ($scope) ->
 
   onChange = (text) ->
     if text.length == 0
-      self.assemblerStatus = 'OK'
-      $scope.$apply()
     else
       try
-        console.log 'parse'
         assembler.assemble text
-        console.log 'ok'
         if errorLine != null
           editor.getSession().setAnnotations []
           errorLine = null
-
-        self.assemblerStatus = 'OK'
-        $scope.$apply()
       catch ex
-        console.log ex
         if ex.coords?
           errorLine = ex.coords.line
-          console.log errorLine
           editor.getSession().setAnnotations([
             row: errorLine
             text: ex.message
             type: 'error'
           ])
 
-        self.assemblerStatus = ex.message
-        $scope.$apply()
     return
 
 
@@ -118,10 +105,8 @@ app.controller 'AssemblerController', ($scope) ->
     if text.length
       try
         program = assembler.assemble text
-        self.assemblerStatus = 'OK'
         self.loadProgram program
       catch ex
-        self.assemblerStatus = ex.message
 
     chip8.reset()
     @state = getState()
