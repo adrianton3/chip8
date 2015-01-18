@@ -1,3 +1,4 @@
 .idea
 src/**/*.js
+test/*.js
 test/spec/*.js

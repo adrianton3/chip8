@@ -12,6 +12,9 @@ describe 'assembler', ->
       return
     bytes
 
+  beforeEach ->
+    jasmine.addMatchers CustomMatchers
+
   describe 'labels', ->
     it 'throws an error if a label is declared twice', ->
       expect -> assemble 'label1:\nlabel1:'

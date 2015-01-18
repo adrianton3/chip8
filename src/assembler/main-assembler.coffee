@@ -14,6 +14,7 @@ app.controller 'AssemblerController', ($scope) ->
   rafId = null
 
   editor = null
+  errorLine = null
 
   @running = false
 
@@ -36,10 +37,26 @@ app.controller 'AssemblerController', ($scope) ->
       $scope.$apply()
     else
       try
+        console.log 'parse'
         assembler.assemble text
+        console.log 'ok'
+        if errorLine != null
+          editor.getSession().setAnnotations []
+          errorLine = null
+
         self.assemblerStatus = 'OK'
         $scope.$apply()
       catch ex
+        console.log ex
+        if ex.coords?
+          errorLine = ex.coords.line
+          console.log errorLine
+          editor.getSession().setAnnotations([
+            row: errorLine
+            text: ex.message
+            type: 'error'
+          ])
+
         self.assemblerStatus = ex.message
         $scope.$apply()
     return
@@ -72,6 +89,7 @@ app.controller 'AssemblerController', ($scope) ->
 
 
   @start = ->
+    @reset()
     mainLoop = =>
       for i in [0...TICKS_PER_FRAME]
         chip8.tick()

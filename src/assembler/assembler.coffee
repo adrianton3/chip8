@@ -7,30 +7,37 @@ Chip8Assembler = ->
   BYTE3 = 'byte3'
 
 
+  raise = (message, coords) ->
+    error = Error message
+    error.coords = coords
+    throw error
+    return
+
+
   setupPartValidators = ->
     ret = {}
 
     ret[LABEL] = (token, labels) ->
       unless token.type == 'identifier'
-        throw Error "Expected a label"
+        raise "Expected a label", token.coords
 
       unless labels.has token.value
-        throw Error "Label #{token.value} has not been declared"
+        raise "Label #{token.value} has not been declared", token.coords
 
 
     registerRegex = /^v[0-9A-F]$/
     ret[REGISTER] = (token) ->
       unless token.type == 'identifier' and registerRegex.test token.value
-        throw Error "Expected a register"
+        raise "Expected a register", token.coords
 
     ret[BYTE] = (token) ->
       unless token.type == 'number' and +token.value < 256
-        throw Error "Expected a byte"
+        raise "Expected a byte", token.coords
 
 
     ret[BYTE3] = (token) ->
       unless token.type == 'number' and +token.value < 8
-        throw Error "Expected a number between 0 and 7"
+        raise "Expected a number between 0 and 7", token.coords
 
     ret
 
@@ -113,7 +120,7 @@ Chip8Assembler = ->
     tokens.setMarker()
     instruction = token.value
     if not instructionTypes.has instruction
-      throw Error "Unrecognised instruction #{instruction} in line #{token.coords.line}"
+      raise "Unrecognised instruction #{instruction} in line #{token.coords.line}", token.coords
 
     instructionType = instructionTypes.get instruction
     tokens.advance()
@@ -129,6 +136,11 @@ Chip8Assembler = ->
     [ fullInstruction >> 8, fullInstruction & 0x00FF ]
 
 
+  expectNewline = (tokens, message) ->
+    if tokens.getCurrent().type != 'end'
+      tokens.expect 'newline', message
+
+
   getLabels = (tokens) ->
     labels = new Map()
     addressCounter = 0x200
@@ -137,14 +149,16 @@ Chip8Assembler = ->
       token = tokens.getCurrent()
       if token.type == 'label'
         if labels.has token.value
-          throw Error "label '#{token.value}' already declared"
+          raise "label '#{token.value}' already declared", token.coords
         labels.set token.value, addressCounter
         tokens.advance()
-        tokens.expect 'newline', 'Expected new line after label declaration'
+        expectNewline tokens, 'Expected new line after label declaration'
       else if token.type == 'identifier'
         while tokens.hasNext() and tokens.getCurrent().type != 'newline'
           tokens.advance()
         addressCounter += 2
+      else if token.type == 'end'
+        break
       else
         tokens.advance()
 
@@ -153,7 +167,6 @@ Chip8Assembler = ->
 
 
   parse = (rawTokens) ->
-    rawTokens.push { type: 'newline' }
     tokens = tokenList rawTokens
     labels = getLabels tokens
     instructions = []
@@ -163,9 +176,11 @@ Chip8Assembler = ->
 
       if token.type == 'identifier'
         Array::push.apply instructions, (parseInstruction tokens, labels)
-        tokens.expect 'newline', 'Expected new line'
+        expectNewline tokens, 'Expected new line after label declaration'
+      else if token.type == 'end'
+        break
       else if token.type != 'newline' and token.type != 'label'
-        throw Error "Unexpected #{token.type}"
+        raise "Unexpected #{token.type}", token.coords
       else
         tokens.advance()
 

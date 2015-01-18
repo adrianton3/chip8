@@ -33,6 +33,18 @@ Chip8Tokenizer = (rawString) ->
     coords: coords
 
 
+  end = (coords) ->
+    type: 'end'
+    coords: coords
+
+
+  raise = (message, coords) ->
+    error = Error message
+    error.coords = coords
+    throw error
+    return
+
+
   chopNumberDec = (string) ->
     string.setMarker()
 
@@ -41,7 +53,7 @@ Chip8Tokenizer = (rawString) ->
 
     current = string.getCurrent()
     if current != ' ' and current != '\n'
-      throw Error "Unexpected character '#{current}'"
+      raise "Unexpected character '#{current}'", string.getCoords()
 
     numberDec string.getMarked(), string.getCoords()
 
@@ -56,11 +68,11 @@ Chip8Tokenizer = (rawString) ->
 
     current = string.getCurrent()
     if current != ' ' and current != '\n'
-      throw Error "Unexpected character '#{current}'"
+      raise "Unexpected character '#{current}'", string.getCoords()
 
     rawNumber = string.getMarked()
     if rawNumber.length == 0
-      throw Error "Encountered malformed number"
+      raise "Encountered malformed number", string.getCoords()
     numberHex rawNumber, string.getCoords()
 
 
@@ -74,11 +86,11 @@ Chip8Tokenizer = (rawString) ->
 
     current = string.getCurrent()
     if current != ' ' and current != '\n'
-      throw Error "Unexpected character '#{current}'"
+      raise "Unexpected character '#{current}'", string.getCoords()
 
     rawNumber = string.getMarked()
     if rawNumber.length == 0
-      throw Error "Encountered malformed number"
+      raise "Encountered malformed number", string.getCoords()
     numberBin rawNumber, string.getCoords()
 
 
@@ -128,10 +140,12 @@ Chip8Tokenizer = (rawString) ->
       else
         string.advance()
 
+    tokens.push end string.getCoords()
+
     tokens
 
 
-  chop iterableString rawString + ' '
+  chop iterableString rawString
 
 
 window.Chip8Tokenizer = Chip8Tokenizer

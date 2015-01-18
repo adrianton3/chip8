@@ -22,16 +22,18 @@ iterableString = (string_) ->
 
 
   advance = ->
-    pointer++
     if getCurrent() == '\n'
       line++
       column = 0
     else
       column++
+    pointer++
+    return
 
 
   setMarker = (offset = 0) ->
     marker = pointer + offset
+    return
 
 
   getMarked = (offset = 0) ->

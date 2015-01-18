@@ -1,7 +1,10 @@
 'use strict'
 
 describe 'tokenizer', ->
-  tokenize = window.Chip8Tokenizer
+  tokenize = (string) ->
+    tokens = window.Chip8Tokenizer string
+    tokens.pop()
+    tokens
 
   token = (type) ->
     (value, line, column) ->
@@ -10,7 +13,16 @@ describe 'tokenizer', ->
   number = token 'number'
   label = token 'label'
   identifier = token 'identifier'
+  newline = (line, column) -> { type: 'newline', coords: { line, column } }
 
+  error = (message, coords) ->
+    error_ = Error message
+    error_.coords = coords
+    error_
+
+
+  beforeEach ->
+    jasmine.addMatchers CustomMatchers
 
   it 'tokenizes 0', ->
     expect tokenize '0'
@@ -30,7 +42,7 @@ describe 'tokenizer', ->
 
   it 'throws an exception when parsing a number not followed by a separator', ->
     expect -> tokenize '123a'
-    .toThrow Error "Unexpected character 'a'"
+    .toThrowWithMessage error "Unexpected character 'a'", { line: 0, column: 3 }
 
   it 'tokenizes a hexadecimal number', ->
     expect tokenize '0x20'
@@ -38,7 +50,11 @@ describe 'tokenizer', ->
 
   it 'throws an exception when parsing a malformed hexadecimal number', ->
     expect -> tokenize '0x'
-    .toThrow Error 'Encountered malformed number'
+    .toThrowWithMessage error 'Encountered malformed number', { line: 0, column: 2 }
+
+  it 'throws an exception when parsing a malformed binary number at the right coords', ->
+    expect -> tokenize '\n\n\n  0b'
+    .toThrowWithMessage error 'Encountered malformed number', { line: 3, column: 4 }
 
   it 'tokenizes a hexadecimal number', ->
     expect tokenize '0b1101'
@@ -46,7 +62,11 @@ describe 'tokenizer', ->
 
   it 'throws an exception when parsing a malformed binary number', ->
     expect -> tokenize '0b'
-    .toThrow Error 'Encountered malformed number'
+    .toThrowWithMessage error 'Encountered malformed number', { line: 0, column: 2 }
+
+  it 'throws an exception when parsing a malformed binary number at the right coords', ->
+    expect -> tokenize '\n0b'
+    .toThrowWithMessage error 'Encountered malformed number', { line: 1, column: 2 }
 
   it 'tokenizes an identifier', ->
     expect tokenize 'asd'
@@ -59,6 +79,10 @@ describe 'tokenizer', ->
   it 'tokenizes an label', ->
     expect tokenize 'asd:'
     .toEqual [label 'asd', 0, 4]
+
+  it 'tokenizes newlines', ->
+    expect tokenize '\n'
+    .toEqual [newline 0, 0]
 
   it 'ignores a comment', ->
     expect tokenize '; asd'
