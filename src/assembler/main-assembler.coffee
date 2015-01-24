@@ -31,6 +31,7 @@ app.controller 'AssemblerController', ($scope) ->
 
   onChange = (text) ->
     if text.length == 0
+      editor.getSession().setAnnotations []
     else
       try
         assembler.assemble text
