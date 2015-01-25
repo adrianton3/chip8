@@ -24,7 +24,7 @@
     onChange = function(text) {
       var ex;
       if (text.length === 0) {
-
+        editor.getSession().setAnnotations([]);
       } else {
         try {
           assembler.assemble(text);
@@ -49,6 +49,7 @@
     };
     setupEditor = function() {
       editor = ace.edit('editor');
+      editor.getSession().setMode('ace/mode/chip8');
       editor.setTheme('ace/theme/monokai');
       editor.on('input', function() {
         return onChange(editor.getValue());
