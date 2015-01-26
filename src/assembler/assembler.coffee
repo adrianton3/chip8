@@ -65,8 +65,8 @@ Chip8Assembler = ->
         code0 | ((parseInt parts[1].value[1], 16) << 8) | code23
 
 
-    add 'cls', [], -> 0x0000
-    add 'return', [], -> 0x000E
+    add 'cls', [], -> 0x00E0
+    add 'return', [], -> 0x00EE
 
     add_NNN 'jump', 0x1000
     add_NNN 'call', 0x2000
