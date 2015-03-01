@@ -21,6 +21,20 @@ body {
     font-family: Consolas, Inconsolanta, "Lucida Console", Monaco, monospace;
 }
 
+.centered-main {
+    width: 790px;
+    margin-top: 64px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.centered-assembler {
+    width: 972px;
+    margin-top: 16px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 .key {
     width: 60px;
     height: 60px;

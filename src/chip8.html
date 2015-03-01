@@ -7,16 +7,18 @@
     <title>Chip8 emulator</title>
 </head>
 <body ng-app="Chip8">
-    <div id="container">
-        <canvas id="can" class="display" width="512" height="256"></canvas>
-    </div>
+    <div class="centered-main">
+        <div id="container">
+            <canvas id="can" class="display" width="512" height="256"></canvas>
+        </div>
 
-    <div class="drop-menu" ng-controller="Chip8Controller as chip8Controller">
-        <select
-            ng-options="romName for romName in chip8Controller.romNames"
-            ng-model="chip8Controller.selectedRomName"
-            ng-change="chip8Controller.changeRom()"
-        ></select>
+        <div class="drop-menu" ng-controller="Chip8Controller as chip8Controller">
+            <select
+                ng-options="romName for romName in chip8Controller.romNames"
+                ng-model="chip8Controller.selectedRomName"
+                ng-change="chip8Controller.changeRom()"
+            ></select>
+        </div>
     </div>
 
     <script src="../lib/angular.min.js"></script>

@@ -47,7 +47,7 @@ Chip8Keyboard = ->
         tr.appendChild td
 
         button = document.createElement 'button'
-        button.innerText = key
+        button.textContent = key
         button.classList.add 'key'
         td.appendChild button
 
