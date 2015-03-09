@@ -109,7 +109,7 @@ Chip8Disassembler = ->
     else if X?
       "#{type} #{registerNames[X]}"
     else if type == 'dw'
-      "dw 0x#{(word.toString 16).toUpperCase()}"
+      "dw 0x#{(word.toString 16).toUpperCase()} ; #{word} ; 0b#{word.toString 2}"
     else
       type
 
