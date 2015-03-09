@@ -3,6 +3,7 @@
 Chip8Assembler = ->
   LABEL = 'label'
   REGISTER = 'register'
+  WORD = 'word'
   BYTE = 'byte'
   BYTE3 = 'byte3'
 
@@ -29,6 +30,11 @@ Chip8Assembler = ->
     ret[REGISTER] = (token) ->
       unless token.type == 'identifier' and registerRegex.test token.value
         raise "Expected a register", token.coords
+
+    ret[WORD] = (token) ->
+      unless token.type == 'number' and +token.value < 256 * 256
+        raise "Expected a word", token.coords
+
 
     ret[BYTE] = (token) ->
       unless token.type == 'number' and +token.value < 256
@@ -107,6 +113,8 @@ Chip8Assembler = ->
     add_X__ 'bcd', 0xF000, 0x0033
     add_X__ 'store', 0xF000, 0x0055
     add_X__ 'load', 0xF000, 0x0065
+
+    add 'dw', [WORD], (parts) -> parts[1].value
 
     ret
 

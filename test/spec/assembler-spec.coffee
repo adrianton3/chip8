@@ -47,3 +47,13 @@ describe 'assembler', ->
     it 'throws an exception if value is missing', ->
       expect -> assemble 'sei v0'
       .toThrow Error 'Expected a byte'
+
+
+  describe 'dw', ->
+    it 'encodes', ->
+      expect assemble 'dw 0x1234'
+      .toEqual splitWords [0x1234]
+
+    it 'throws an exception if value is too high', ->
+      expect -> assemble 'dw 0x12345'
+      .toThrow Error 'Expected a word'
