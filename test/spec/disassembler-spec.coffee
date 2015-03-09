@@ -13,7 +13,7 @@ describe 'disassembler', ->
     bytes
 
 
-  PROGRAM_OFFSET = 0
+  PROGRAM_OFFSET = 0x0123
   decode = (words) ->
     { instructions, jumpAddresses } = disassemble (splitWords words), PROGRAM_OFFSET
     serialize instructions, jumpAddresses, PROGRAM_OFFSET
@@ -23,7 +23,7 @@ describe 'disassembler', ->
     jasmine.addMatchers CustomMatchers
 
 
-  describe 'jump', ->
+  describe 'jump (_NNN)', ->
     it 'decodes one jump', ->
       expect decode [0x1000 | PROGRAM_OFFSET | 0]
       .toEqual 'label-1:\njump label-1'
@@ -36,8 +36,22 @@ describe 'disassembler', ->
       expect decode [0x1000 | (PROGRAM_OFFSET + 2), 0x1000 | (PROGRAM_OFFSET + 0)]
       .toEqual 'label-1:\njump label-2\nlabel-2:\njump label-1'
 
+    it 'decodes jumps to the same addres', ->
+      expect decode [0x1000 | (PROGRAM_OFFSET + 0), 0x1000 | (PROGRAM_OFFSET + 0)]
+      .toEqual 'label-1:\njump label-1\njump label-1'
 
-  describe 'sei', ->
+
+  describe 'sei (_XNN)', ->
     it 'decodes', ->
       expect decode [0x3000 | 0x0A00 | 31]
       .toEqual 'sei vA 31'
+
+  describe 'sprite (_XYN)', ->
+    it 'decodes', ->
+      expect decode [0xD000 | 0x0500 | 0x00D0 | 3]
+      .toEqual 'sprite v5 vD 3'
+
+  describe 'cls (____)', ->
+    it 'decodes', ->
+      expect decode [0x00E0]
+      .toEqual 'cls'

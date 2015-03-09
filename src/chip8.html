@@ -2,18 +2,23 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
     <link href='http://fonts.googleapis.com/css?family=Coda' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="style.css">
-    <title>Chip8 emulator</title>
+    <title>CHIP-8 emulator</title>
 </head>
+
 <body ng-app="Chip8">
     <div class="centered-main">
+        <div class="title">CHIP-8 emulator</div>
+
         <div id="container">
             <canvas id="can" class="display" width="512" height="256"></canvas>
         </div>
 
-        <div class="drop-menu" ng-controller="Chip8Controller as chip8Controller">
+        <div ng-controller="Chip8Controller as chip8Controller">
             <select
+                class="drop-menu"
                 ng-options="romName for romName in chip8Controller.romNames"
                 ng-model="chip8Controller.selectedRomName"
                 ng-change="chip8Controller.changeRom()"

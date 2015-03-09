@@ -41,8 +41,8 @@ Chip8Disassembler = ->
       add pattern, decode_X__ name
 
 
-    add 0x00E0, -> 'cls'
-    add 0x00EE, -> 'return'
+    add 0x00E0, -> type: 'cls'
+    add 0x00EE, -> type: 'return'
 
     add_NNN 0x1000, 'jump'
     add_NNN 0x2000, 'call'
@@ -69,10 +69,10 @@ Chip8Disassembler = ->
 
     add_XNN 0xC000, 'rnd'
 
-    add 0xD00F, (instruction) ->
+    add 0xD000, (instruction) ->
       type: 'sprite'
-      X: (instruction & 0x0F00) >> 2
-      Y: (instruction & 0x00F0) >> 1
+      X: (instruction & 0x0F00) >> 8
+      Y: (instruction & 0x00F0) >> 4
       N: instruction & 0x000F
 
     add_X__ 0xE09E, 'skr'
@@ -96,7 +96,7 @@ Chip8Disassembler = ->
 
 
   serializeInstruction = (instruction, labels) ->
-    { type, X, Y, N, NN, NNN } = instruction
+    { type, X, Y, N, NN, NNN, word } = instruction
 
     if NNN?
       "#{type} #{labels.get NNN}"
@@ -108,6 +108,8 @@ Chip8Disassembler = ->
       "#{type} #{registerNames[X]} #{registerNames[Y]}"
     else if X?
       "#{type} #{registerNames[X]}"
+    else if type == 'dw'
+      "dw 0x#{(word.toString 16).toUpperCase()}"
     else
       type
 
@@ -121,14 +123,16 @@ Chip8Disassembler = ->
         decoder = instructionPatterns.get masked
         return decoder instruction
 
+    { type: 'dw', word: instruction }
 
-  serialize = (instructions, jumpAddresses, startOffset = 0x0200) ->
+
+  serialize = (instructions, jumpAddresses) ->
     labels = jumpAddresses.reduce (map, address, index) ->
       map.set address, "label-#{index + 1}"
     , new Map
 
     pointer = 0
-    programCounter = startOffset
+    programCounter = 0
 
     lines = []
     for instruction in instructions
@@ -142,11 +146,19 @@ Chip8Disassembler = ->
     lines.join '\n'
 
 
+  uniqueSorted = (array) ->
+    ret = []
+    for i in [1...array.length]
+      if array[i - 1] != array[i]
+        ret.push array[i - 1]
+    ret.push array[i - 1]
+    ret
+
   disassemble = (program, startOffset = 0x0200) ->
     decodedInstructions = []
     jumpAddresses = []
 
-    for programCounter in [startOffset..0xFFFF] by 2
+    for programCounter in [0x000..0xFFF] by 2
       instructionHi = program[programCounter]
       instructionLo = program[programCounter + 1]
       break unless instructionHi | instructionLo
@@ -156,9 +168,12 @@ Chip8Disassembler = ->
       decodedInstructions.push decodedInstruction
 
       if decodedInstruction.NNN?
+        decodedInstruction.NNN -= startOffset
+        decodedInstruction.NNN = Math.max 0, decodedInstruction.NNN
         jumpAddresses.push decodedInstruction.NNN
 
     jumpAddresses.sort()
+    jumpAddresses = uniqueSorted jumpAddresses
 
     {
       instructions: decodedInstructions

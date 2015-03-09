@@ -15,15 +15,15 @@ ace.define 'ace/mode/chip8-rules', (require_, exports, module) ->
       'start': [{
         token: INSTRUCTION
         regex: ///
-            addi|addr|and|bcd|call|cls|digit|iaddr|imovi|jumpoff|jump|load|movi|movr|movs|movt|nsubr|
+            addi|addr|and|bcd|call|cls|digit|dw|iaddr|imovi|jumpoff|jump|load|movi|movr|movs|movt|nsubr|
             or|return|rmovt|rnd|sei|ser|shl|shr|skr|snei|snkr|sner|sprite|store|subr|waitk|xor
           ///
       }, {
         token: REGISTER
-        regex: /v[0-9A-F]/
+        regex: /v[0-9A-Fa-f]/
       }, {
         token: NUMBER
-        regex: /0x[\dA-F]+/
+        regex: /0x[\dA-Fa-f]+/
       }, {
         token: NUMBER
         regex: /0b[01]+/

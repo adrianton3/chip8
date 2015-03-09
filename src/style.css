@@ -1,6 +1,13 @@
 body {
     background-color: hsl(79, 15%, 7%); /*#131411;*/
     color: white;
+    font-family: 'Open Sans', sans-serif;
+}
+
+.title {
+    margin-top: 16px;
+    margin-bottom: 8px;
+    font-size: 16px;
 }
 
 .display {
@@ -23,13 +30,6 @@ body {
 
 .centered-main {
     width: 790px;
-    margin-top: 64px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.centered-assembler {
-    width: 972px;
     margin-top: 16px;
     margin-left: auto;
     margin-right: auto;
@@ -116,10 +116,9 @@ td {
     overflow: auto;
 }
 
-.drop-menu select {
+.drop-menu {
     background-color: hsl(10, 90%, 36%);
     border-radius: 2px;
-    font-family: sans-serif;
     color: white;
     width: 100px;
     border: none;
@@ -129,7 +128,7 @@ td {
     transition: background-color 120ms;
 }
 
-.drop-menu select:hover {
+.drop-menu:hover {
     background-color: hsl(10, 100%, 53%);
     transition: background-color 120ms;
 }

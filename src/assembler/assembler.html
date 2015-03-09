@@ -2,12 +2,17 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
     <link href='http://fonts.googleapis.com/css?family=Coda' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="../style.css">
-    <title>Chip8 assembler</title>
+    <link rel="stylesheet" type="text/css" href="assembler-style.css">
+    <title>CHIP-8 assembler</title>
 </head>
+
 <body ng-app="Assembler">
     <div class="centered-assembler" ng-controller="AssemblerController as assemblerController">
+        <div class="title">CHIP-8 debugger</div>
+
         <div id="container">
             <canvas id="can" class="display" width="512" height="256"></canvas>
         </div>
@@ -55,12 +60,12 @@
     <script src="../keyboard.js"></script>
     <script src="../renderer.js"></script>
 
-    <script type="text/javascript" src="iterable-string.js"></script>
-    <script type="text/javascript" src="tokenizer.js"></script>
-    <script type="text/javascript" src="token-list.js"></script>
-    <script type="text/javascript" src="assembler.js"></script>
-    <script type="text/javascript" src="chip8-mode.js"></script>
-    <script type="text/javascript" src="chip8-rules.js"></script>
+    <script src="iterable-string.js"></script>
+    <script src="tokenizer.js"></script>
+    <script src="token-list.js"></script>
+    <script src="assembler.js"></script>
+    <script src="../chip8-mode.js"></script>
+    <script src="../chip8-rules.js"></script>
 
     <script src="../common.js"></script>
     <script src="main-assembler.js"></script>
