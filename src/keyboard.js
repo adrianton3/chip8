@@ -39,7 +39,7 @@
           td = document.createElement('td');
           tr.appendChild(td);
           button = document.createElement('button');
-          button.innerText = key;
+          button.textContent = key;
           button.classList.add('key');
           td.appendChild(button);
           setEventListener(button, parseInt(key, 16));

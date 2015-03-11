@@ -4,9 +4,10 @@
   var Chip8Assembler;
 
   Chip8Assembler = function() {
-    var BYTE, BYTE3, LABEL, REGISTER, assemble, expectNewline, getLabels, instructionTypes, parse, parseInstruction, partValidators, raise, setupInstructions, setupPartValidators;
+    var BYTE, BYTE3, LABEL, REGISTER, WORD, assemble, expectNewline, getLabels, instructionTypes, parse, parseInstruction, partValidators, raise, setupInstructions, setupPartValidators;
     LABEL = 'label';
     REGISTER = 'register';
+    WORD = 'word';
     BYTE = 'byte';
     BYTE3 = 'byte3';
     raise = function(message, coords) {
@@ -30,6 +31,11 @@
       ret[REGISTER] = function(token) {
         if (!(token.type === 'identifier' && registerRegex.test(token.value))) {
           return raise("Expected a register", token.coords);
+        }
+      };
+      ret[WORD] = function(token) {
+        if (!(token.type === 'number' && +token.value < 256 * 256)) {
+          return raise("Expected a word", token.coords);
         }
       };
       ret[BYTE] = function(token) {
@@ -74,10 +80,10 @@
         });
       };
       add('cls', [], function() {
-        return 0x0000;
+        return 0x00E0;
       });
       add('return', [], function() {
-        return 0x000E;
+        return 0x00EE;
       });
       add_NNN('jump', 0x1000);
       add_NNN('call', 0x2000);
@@ -113,6 +119,9 @@
       add_X__('bcd', 0xF000, 0x0033);
       add_X__('store', 0xF000, 0x0055);
       add_X__('load', 0xF000, 0x0065);
+      add('dw', [WORD], function(parts) {
+        return parts[1].value;
+      });
       return ret;
     };
     instructionTypes = setupInstructions();
