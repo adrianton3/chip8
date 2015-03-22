@@ -1,6 +1,12 @@
 .centered-assembler {
-    width: 972px;
+    width: 1024px;
     margin-top: 16px;
     margin-left: auto;
     margin-right: auto;
+}
+
+.active-line {
+    position: absolute;
+    z-index: 20;
+    background-color: hsl(212, 90%, 16%);
 }

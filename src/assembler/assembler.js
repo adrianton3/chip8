@@ -52,7 +52,7 @@
     };
     setupInstructions = function() {
       var add, add_NNN, add_XNN, add_XY_, add_X__, ret;
-      ret = new Map();
+      ret = new Map;
       add = function(name, expectedParts, encoder) {
         return ret.set(name, {
           expectedParts: expectedParts,
@@ -71,7 +71,7 @@
       };
       add_XY_ = function(name, code0, code3) {
         return add(name, [REGISTER, REGISTER], function(parts) {
-          return code1 | ((parseInt(parts[1].value[1], 16)) << 8) | ((parseInt(parts[2].value[1], 16)) << 4) | code3;
+          return code0 | ((parseInt(parts[1].value[1], 16)) << 8) | ((parseInt(parts[2].value[1], 16)) << 4) | code3;
         });
       };
       add_X__ = function(name, code0, code23) {
@@ -153,8 +153,8 @@
     };
     getLabels = function(tokens) {
       var addressCounter, labels, token;
-      labels = new Map();
-      addressCounter = 0x200;
+      labels = new Map;
+      addressCounter = 0x0200;
       while (tokens.hasNext()) {
         token = tokens.getCurrent();
         if (token.type === 'label') {
@@ -179,15 +179,19 @@
       return labels;
     };
     parse = function(rawTokens) {
-      var instructions, labels, token, tokens;
+      var addressCounter, instructions, labels, lineMapping, token, tokens;
       tokens = tokenList(rawTokens);
       labels = getLabels(tokens);
       instructions = [];
+      lineMapping = new Map;
+      addressCounter = 0x0200;
       while (tokens.hasNext()) {
         token = tokens.getCurrent();
         if (token.type === 'identifier') {
+          lineMapping.set(addressCounter, tokens.getCurrent().coords.line);
+          addressCounter += 2;
           Array.prototype.push.apply(instructions, parseInstruction(tokens, labels));
-          expectNewline(tokens, 'Expected new line after label declaration');
+          expectNewline(tokens, 'Expected new line after instruction');
         } else if (token.type === 'end') {
           break;
         } else if (token.type !== 'newline' && token.type !== 'label') {
@@ -196,7 +200,10 @@
           tokens.advance();
         }
       }
-      return instructions;
+      return {
+        instructions: instructions,
+        lineMapping: lineMapping
+      };
     };
     assemble = function(string) {
       var rawTokens;
