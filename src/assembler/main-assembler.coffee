@@ -1,5 +1,7 @@
 'use strict'
 
+Range = (ace.require 'ace/range').Range
+
 app = angular.module 'Assembler', []
 
 app.controller 'AssemblerController', ($scope) ->
@@ -15,6 +17,9 @@ app.controller 'AssemblerController', ($scope) ->
 
   editor = null
   errorLine = null
+
+  lineMapping = null
+  marker = null
 
   @running = false
 
@@ -87,7 +92,6 @@ app.controller 'AssemblerController', ($scope) ->
       @state = getState()
       $scope.$apply() if not $scope.$$phase
       draw()
-
       rafId = requestAnimationFrame mainLoop
       return
 
@@ -101,19 +105,37 @@ app.controller 'AssemblerController', ($scope) ->
     return
 
 
+  clearMarker = ->
+    editor.getSession().removeMarker marker if marker?
+    marker = null
+    return
+
+
+  setMarker = (line) ->
+    clearMarker()
+    if line?
+      range = new Range line, 0, line, 100
+      marker = editor.getSession().addMarker range, 'active-line', 'fullLine'
+    return
+
+
   @reset = ->
     @stop()
     text = editor.getValue()
     if text.length
       try
-        program = assembler.assemble text
-        self.loadProgram program
+        { instructions, lineMapping } = assembler.assemble text
+        self.loadProgram instructions
       catch ex
 
     chip8.reset()
     @state = getState()
     setVideoData chip8.getVideo()
     draw()
+    if lineMapping?
+      line = lineMapping.get @state.programCounter
+      setMarker line
+    return
 
 
   @reset()
@@ -123,9 +145,12 @@ app.controller 'AssemblerController', ($scope) ->
 
 
   @step = ->
+    return unless lineMapping?
     chip8.tick()
     @state = getState()
     setVideoData chip8.getVideo()
+    line = lineMapping.get @state.programCounter
+    setMarker line
     draw()
     return
 
