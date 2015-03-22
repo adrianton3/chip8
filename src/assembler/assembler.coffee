@@ -49,7 +49,7 @@ Chip8Assembler = ->
 
 
   setupInstructions = ->
-    ret = new Map()
+    ret = new Map
 
     add = (name, expectedParts, encoder) ->
       ret.set name, { expectedParts, encoder }
@@ -64,7 +64,7 @@ Chip8Assembler = ->
 
     add_XY_ = (name, code0, code3) ->
       add name, [REGISTER, REGISTER], (parts) ->
-        code1 | ((parseInt parts[1].value[1], 16) << 8) | ((parseInt parts[2].value[1], 16) << 4) | code3
+        code0 | ((parseInt parts[1].value[1], 16) << 8) | ((parseInt parts[2].value[1], 16) << 4) | code3
 
     add_X__ = (name, code0, code23) ->
       add name, [REGISTER], (parts) ->
@@ -150,8 +150,8 @@ Chip8Assembler = ->
 
 
   getLabels = (tokens) ->
-    labels = new Map()
-    addressCounter = 0x200
+    labels = new Map
+    addressCounter = 0x0200
 
     while tokens.hasNext()
       token = tokens.getCurrent()
@@ -178,13 +178,17 @@ Chip8Assembler = ->
     tokens = tokenList rawTokens
     labels = getLabels tokens
     instructions = []
+    lineMapping = new Map
+    addressCounter = 0x0200
 
     while tokens.hasNext()
       token = tokens.getCurrent()
 
       if token.type == 'identifier'
+        lineMapping.set addressCounter, tokens.getCurrent().coords.line
+        addressCounter += 2
         Array::push.apply instructions, (parseInstruction tokens, labels)
-        expectNewline tokens, 'Expected new line after label declaration'
+        expectNewline tokens, 'Expected new line after instruction'
       else if token.type == 'end'
         break
       else if token.type != 'newline' and token.type != 'label'
@@ -192,7 +196,7 @@ Chip8Assembler = ->
       else
         tokens.advance()
 
-    instructions
+    { instructions, lineMapping }
 
 
   assemble = (string) ->
