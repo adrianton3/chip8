@@ -1,0 +1,13 @@
+movi v2 0xA
+digit v2
+sprite v0 v1 5 ; print A
+
+movi v2 0xB
+digit v2
+movi v0 5
+sprite v0 v1 5 ; print B
+
+movi v2 0xC
+digit v2
+movi v0 10
+sprite v0 v1 5 ; print C

@@ -4,14 +4,12 @@ Range = (ace.require 'ace/range').Range
 
 app = angular.module 'Assembler', []
 
-app.controller 'AssemblerController', ($scope) ->
+app.controller 'AssemblerController', ['$scope', '$http', ($scope, $http) ->
   { initContext, draw, setVideoData } = Chip8Renderer()
 
   initContext document.getElementById 'can'
 
   TICKS_PER_FRAME = 1
-
-  self = @
 
   rafId = null
 
@@ -21,9 +19,9 @@ app.controller 'AssemblerController', ($scope) ->
   lineMapping = null
   marker = null
 
-  @running = false
+  @status = 'idle'
 
-  @state = null
+  @emulatorState = null
 
   assembler = Chip8Assembler()
 
@@ -35,6 +33,7 @@ app.controller 'AssemblerController', ($scope) ->
 
 
   onChange = (text) ->
+    clearMarker()
     if text.length == 0
       editor.getSession().setAnnotations []
     else
@@ -66,7 +65,7 @@ app.controller 'AssemblerController', ($scope) ->
   setupEditor()
 
 
-  getState = ->
+  getEmulatorState = ->
     programCounter = chip8.getProgramCounter()
     stackPointer = chip8.getStackPointer()
     I = chip8.getI()
@@ -82,27 +81,13 @@ app.controller 'AssemblerController', ($scope) ->
     }
 
 
-  @start = ->
-    @reset()
-    mainLoop = =>
-      for i in [0...TICKS_PER_FRAME]
-        chip8.tick()
-
-      setVideoData chip8.getVideo()
-      @state = getState()
-      $scope.$apply() if not $scope.$$phase
-      draw()
-      rafId = requestAnimationFrame mainLoop
-      return
-
-    mainLoop()
-    return
+  loadSample = (sampleName) ->
+    $http.get "samples/#{sampleName}.chip8", { responseType: 'text' }
+    .success (source) =>
+      editor.setValue source, -1
 
 
-  @stop = ->
-    @running = false
-    cancelAnimationFrame rafId
-    return
+  loadSample 'sprites'
 
 
   clearMarker = ->
@@ -111,48 +96,103 @@ app.controller 'AssemblerController', ($scope) ->
     return
 
 
-  setMarker = (line) ->
-    clearMarker()
-    if line?
-      range = new Range line, 0, line, 100
-      marker = editor.getSession().addMarker range, 'active-line', 'fullLine'
+  @clearMarker = clearMarker
+
+
+  @updateMarker = ->
+    @clearMarker()
+    if lineMapping?
+      line = lineMapping.get @emulatorState.programCounter
+      if line?
+        range = new Range line, 0, line, 100
+        marker = editor.getSession().addMarker range, 'active-line', 'fullLine'
+    return
+
+
+  @updateVideo = ->
+    setVideoData chip8.getVideo()
+    draw()
+
+
+  @updateEmulatorState = ->
+    @emulatorState = getEmulatorState()
+
+
+  @startMainLoop = ->
+    return if rafId?
+
+    mainLoop = =>
+      for i in [0...TICKS_PER_FRAME]
+        chip8.tick()
+
+      @updateEmulatorState()
+      $scope.$apply() unless $scope.$$phase
+
+      @updateVideo()
+
+      rafId = requestAnimationFrame mainLoop
+      return
+
+    mainLoop()
+    return
+
+
+  @stopMainLoop = ->
+    cancelAnimationFrame rafId
+    rafId = null
+    return
+
+
+  @start = ->
+    @reset() if @status == 'idle'
+    @status = 'running'
+    @clearMarker()
+    @startMainLoop()
+    return
+
+
+  @pause = ->
+    @status = 'paused'
+    @stopMainLoop()
+    @updateMarker()
+    return
+
+
+  @stop = ->
+    @status = 'idle'
+    @stopMainLoop()
     return
 
 
   @reset = ->
     @stop()
+
     text = editor.getValue()
     if text.length
       try
         { instructions, lineMapping } = assembler.assemble text
-        self.loadProgram instructions
+        chip8.load instructions
       catch ex
 
     chip8.reset()
-    @state = getState()
-    setVideoData chip8.getVideo()
-    draw()
-    if lineMapping?
-      line = lineMapping.get @state.programCounter
-      setMarker line
+    @updateEmulatorState()
+    @updateVideo()
+    @updateMarker()
     return
 
 
   @reset()
 
 
-  @loadProgram = chip8.load
-
-
   @step = ->
-    return unless lineMapping?
+    @reset() if @status == 'idle'
+    @status = 'paused'
     chip8.tick()
-    @state = getState()
-    setVideoData chip8.getVideo()
-    line = lineMapping.get @state.programCounter
-    setMarker line
-    draw()
+    @updateEmulatorState()
+    @updateVideo()
+    @updateMarker()
     return
 
 
   return
+]

@@ -98,9 +98,18 @@ body {
     transition: background-color 120ms;
 }
 
+.controls > button:disabled {
+    background-color: hsl(10, 90%, 26%);
+    border-color: hsl(10, 90%, 26%);
+}
+
 .controls > button:hover {
     background-color: hsl(10, 100%, 53%);
     transition: background-color 120ms;
+}
+
+.controls > button:hover:disabled {
+    background-color: hsl(10, 90%, 26%);
 }
 
 .state {

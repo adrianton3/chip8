@@ -25,26 +25,30 @@
             <div class="controls">
                 <button
                     ng-click="assemblerController.start()"
-                    ng-disabled="assemblerController.running"
+                    ng-disabled="assemblerController.status == 'running'"
                 >Start</button>
 
                 <button
-                    ng-click="assemblerController.reset()"
+                    ng-click="assemblerController.pause()"
+                    ng-disabled="assemblerController.status != 'running'"
+                >Pause</button>
 
+                <button
+                    ng-click="assemblerController.reset()"
                 >Reset</button>
 
                 <button
                     ng-click="assemblerController.step()"
-                    ng-disabled="assemblerController.running"
+                    ng-disabled="assemblerController.status == 'running'"
                 >Step</button>
             </div>
 
             <table class="state mono">
-                    <tr><td>PC:</td><td>{{assemblerController.state.programCounter}}</td></tr>
-                    <tr><td>SP:</td><td>{{assemblerController.state.stackPointer}}</td></tr>
-                    <tr><td>I:</td><td>{{assemblerController.state.I}}</td></tr>
-                    <tr><td>Registers:</td><td>{{assemblerController.state.registers}}</td></tr>
-                    <tr><td>Stack:</td><td>{{assemblerController.state.stack}}</td></tr>
+                <tr><td>PC:</td><td>{{assemblerController.emulatorState.programCounter}}</td></tr>
+                <tr><td>SP:</td><td>{{assemblerController.emulatorState.stackPointer}}</td></tr>
+                <tr><td>I:</td><td>{{assemblerController.emulatorState.I}}</td></tr>
+                <tr><td>Registers:</td><td>{{assemblerController.emulatorState.registers}}</td></tr>
+                <tr><td>Stack:</td><td>{{assemblerController.emulatorState.stack}}</td></tr>
             </table>
 
         </div>
