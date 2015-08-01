@@ -2,3 +2,4 @@
 src/**/*.js
 test/*.js
 test/spec/*.js
+tmp
