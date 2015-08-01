@@ -3,6 +3,7 @@
 Chip8 = ->
 	WIDTH = 64
 	HEIGHT = 32
+	START_PROGRAM = 0x0200
 
 	video = new Uint8Array WIDTH * HEIGHT
 	memory = new Uint8Array 0x1000
@@ -12,34 +13,11 @@ Chip8 = ->
 	soundTimer = 0
 	delayTimer = 0
 
-	programCounter = 0x200
+	programCounter = START_PROGRAM
 	I = 0
 	stackPointer = 0
 
 	waitingForKey = false
-
-
-	load = (romData) ->
-		for i in [0...romData.length]
-			memory[i + 0x0200] = romData[i]
-
-		# calling it here for now
-		initChars()
-		return
-
-
-	reset = ->
-		soundTimer = 0
-		delayTimer = 0
-
-		programCounter = 0x200
-		I = 0
-		stackPointer = 0
-
-		video[i] = 0 for i in [0...WIDTH * HEIGHT]
-		V[i] = 0 for i in [0...16]
-		stack[i] = 0 for i in [0...16]
-		return
 
 
 	initChars = ->
@@ -65,6 +43,28 @@ Chip8 = ->
 		return
 
 
+	load = (romData) ->
+		memory.set romData, START_PROGRAM
+
+		# calling it here for now
+		initChars()
+		return
+
+
+	reset = ->
+		video.fill 0
+		V.fill 0
+		stack.fill 0
+
+		soundTimer = 0
+		delayTimer = 0
+
+		programCounter = START_PROGRAM
+		I = 0
+		stackPointer = 0
+		return
+
+
 	getVideo = -> video
 	getRegisters = -> V
 	getProgramCounter = -> programCounter
@@ -80,8 +80,7 @@ Chip8 = ->
 
 
 	clearScreen = ->
-		for i in [0...video.length]
-			video[i] = 0
+		video.fill 0
 		return
 
 
