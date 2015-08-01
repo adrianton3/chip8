@@ -62,6 +62,8 @@ Chip8 = ->
 		programCounter = START_PROGRAM
 		I = 0
 		stackPointer = 0
+
+		waitingForKey = false
 		return
 
 
