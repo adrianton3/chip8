@@ -24,14 +24,6 @@ tokenList = (tokens_) ->
     tokens[pointer]
 
 
-  expect = (type, message) ->
-    token = getCurrent()
-    advance()
-    if token.type != type
-      throw Error "#{message}, line #{token.coords.line}, column #{token.coords.column}"
-    return
-
-
   setMarker = ->
     marker = pointer
 
@@ -45,7 +37,6 @@ tokenList = (tokens_) ->
     reset
     advance
     getCurrent
-    expect
     setMarker
     getMarked
   }
