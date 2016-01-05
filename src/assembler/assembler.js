@@ -147,9 +147,12 @@
       return [fullInstruction >> 8, fullInstruction & 0x00FF];
     };
     expectNewline = function(tokens, message) {
-      if (tokens.getCurrent().type !== 'end') {
-        return tokens.expect('newline', message);
+      var token;
+      token = tokens.getCurrent();
+      if (token.type !== 'newline' && token.type !== 'end') {
+        raise(message, token.coords);
       }
+      tokens.advance();
     };
     getLabels = function(tokens) {
       var addressCounter, labels, token;
@@ -159,7 +162,7 @@
         token = tokens.getCurrent();
         if (token.type === 'label') {
           if (labels.has(token.value)) {
-            raise("label '" + token.value + "' already declared", token.coords);
+            raise("Label '" + token.value + "' already declared", token.coords);
           }
           labels.set(token.value, addressCounter);
           tokens.advance();

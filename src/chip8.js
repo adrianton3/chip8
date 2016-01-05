@@ -4,45 +4,37 @@
   var Chip8;
 
   Chip8 = function() {
-    var HEIGHT, I, V, WIDTH, clearScreen, delayTimer, getI, getProgramCounter, getRegisters, getStack, getStackPointer, getVideo, initChars, keyboard, load, memory, programCounter, reset, setKeyboard, setPixel, soundTimer, stack, stackPointer, tick, video, waitingForKey;
+    var HEIGHT, I, START_PROGRAM, V, WIDTH, clearScreen, delayTimer, getI, getProgramCounter, getRegisters, getStack, getStackPointer, getVideo, initChars, keyboard, load, memory, programCounter, reset, setKeyboard, setPixel, soundTimer, stack, stackPointer, tick, video, waitingForKey;
     WIDTH = 64;
     HEIGHT = 32;
+    START_PROGRAM = 0x0200;
     video = new Uint8Array(WIDTH * HEIGHT);
     memory = new Uint8Array(0x1000);
     V = new Uint8Array(16);
     stack = new Uint16Array(16);
     soundTimer = 0;
     delayTimer = 0;
-    programCounter = 0x200;
+    programCounter = START_PROGRAM;
     I = 0;
     stackPointer = 0;
     waitingForKey = false;
+    initChars = function() {
+      memory.set([0xF0, 0x90, 0x90, 0x90, 0xF0, 0x20, 0x60, 0x20, 0x20, 0x70, 0xF0, 0x10, 0xF0, 0x80, 0xF0, 0xF0, 0x10, 0xF0, 0x10, 0xF0, 0x90, 0x90, 0xF0, 0x10, 0x10, 0xF0, 0x80, 0xF0, 0x10, 0xF0, 0xF0, 0x80, 0xF0, 0x90, 0xF0, 0xF0, 0x10, 0x20, 0x40, 0x40, 0xF0, 0x90, 0xF0, 0x90, 0xF0, 0xF0, 0x90, 0xF0, 0x10, 0xF0, 0xF0, 0x90, 0xF0, 0x90, 0x90, 0xE0, 0x90, 0xE0, 0x90, 0xE0, 0xF0, 0x80, 0x80, 0x80, 0xF0, 0xE0, 0x90, 0x90, 0x90, 0xE0, 0xF0, 0x80, 0xF0, 0x80, 0xF0, 0xF0, 0x80, 0xF0, 0x80, 0x80]);
+    };
     load = function(romData) {
-      var i, _i, _ref;
-      for (i = _i = 0, _ref = romData.length; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
-        memory[i + 0x0200] = romData[i];
-      }
+      memory.set(romData, START_PROGRAM);
       initChars();
     };
     reset = function() {
-      var i, _i, _j, _k, _ref;
+      video.fill(0);
+      V.fill(0);
+      stack.fill(0);
       soundTimer = 0;
       delayTimer = 0;
-      programCounter = 0x200;
+      programCounter = START_PROGRAM;
       I = 0;
       stackPointer = 0;
-      for (i = _i = 0, _ref = WIDTH * HEIGHT; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
-        video[i] = 0;
-      }
-      for (i = _j = 0; _j < 16; i = ++_j) {
-        V[i] = 0;
-      }
-      for (i = _k = 0; _k < 16; i = ++_k) {
-        stack[i] = 0;
-      }
-    };
-    initChars = function() {
-      memory.set([0xF0, 0x90, 0x90, 0x90, 0xF0, 0x20, 0x60, 0x20, 0x20, 0x70, 0xF0, 0x10, 0xF0, 0x80, 0xF0, 0xF0, 0x10, 0xF0, 0x10, 0xF0, 0x90, 0x90, 0xF0, 0x10, 0x10, 0xF0, 0x80, 0xF0, 0x10, 0xF0, 0xF0, 0x80, 0xF0, 0x90, 0xF0, 0xF0, 0x10, 0x20, 0x40, 0x40, 0xF0, 0x90, 0xF0, 0x90, 0xF0, 0xF0, 0x90, 0xF0, 0x10, 0xF0, 0xF0, 0x90, 0xF0, 0x90, 0x90, 0xE0, 0x90, 0xE0, 0x90, 0xE0, 0xF0, 0x80, 0x80, 0x80, 0xF0, 0xE0, 0x90, 0x90, 0x90, 0xE0, 0xF0, 0x80, 0xF0, 0x80, 0xF0, 0xF0, 0x80, 0xF0, 0x80, 0x80]);
+      waitingForKey = false;
     };
     getVideo = function() {
       return video;
@@ -67,10 +59,7 @@
       keyboard = keyboard_;
     };
     clearScreen = function() {
-      var i, _i, _ref;
-      for (i = _i = 0, _ref = video.length; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
-        video[i] = 0;
-      }
+      video.fill(0);
     };
     setPixel = function(i, j) {
       var address, oldState;
@@ -87,7 +76,7 @@
       address = (i * WIDTH) + j;
       oldState = video[address];
       video[address] ^= 1;
-      return oldState && !video[address];
+      return oldState;
     };
     tick = function() {
       var X, Y, height, i, instruction, instructionHi, instructionLo, j, keyState, line, value, _i, _j, _k, _l;
@@ -147,7 +136,7 @@
           V[X] += instructionLo;
           break;
         case 0x80:
-          switch (0x08 & instructionLo) {
+          switch (0x0F & instructionLo) {
             case 0x00:
               V[X] = V[Y];
               break;
@@ -252,9 +241,9 @@
             case 0x33:
               value = V[X];
               memory[I + 2] = value % 10;
-              value = (value / 10) | 0;
+              value = Math.floor(value / 10);
               memory[I + 1] = value % 10;
-              value = (value / 10) | 0;
+              value = Math.floor(value / 10);
               memory[I + 0] = value % 10;
               break;
             case 0x55:

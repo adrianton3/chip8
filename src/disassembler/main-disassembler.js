@@ -21,16 +21,14 @@
       this.changeRom = function() {
         return $http.get("../../roms/" + this.selectedRomName, {
           responseType: 'arraybuffer'
-        }).success((function(_this) {
-          return function(data) {
-            var instructions, jumpAddresses, str, _ref1;
-            _ref1 = disassemble(new Uint8Array(data), 0x0200), instructions = _ref1.instructions, jumpAddresses = _ref1.jumpAddresses;
-            str = serialize(instructions, jumpAddresses, 0x0200);
-            return editor.setValue(str, -1);
-          };
-        })(this));
+        }).success(function(data) {
+          var instructions, jumpAddresses, str, _ref1;
+          _ref1 = disassemble(new Uint8Array(data), 0x0200), instructions = _ref1.instructions, jumpAddresses = _ref1.jumpAddresses;
+          str = serialize(instructions, jumpAddresses, 0x0200);
+          editor.setValue(str, -1);
+        });
       };
-      return this.changeRom();
+      this.changeRom();
     }
   ]);
 

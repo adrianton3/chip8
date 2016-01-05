@@ -4,7 +4,7 @@
   var tokenList;
 
   tokenList = function(tokens_) {
-    var advance, expect, getCurrent, getMarked, hasNext, marker, pointer, reset, setMarker, tokens;
+    var advance, getCurrent, getMarked, hasNext, marker, pointer, reset, setMarker, tokens;
     pointer = 0;
     marker = 0;
     tokens = tokens_;
@@ -21,14 +21,6 @@
     getCurrent = function() {
       return tokens[pointer];
     };
-    expect = function(type, message) {
-      var token;
-      token = getCurrent();
-      advance();
-      if (token.type !== type) {
-        throw Error("" + message + ", line " + token.coords.line + ", column " + token.coords.column);
-      }
-    };
     setMarker = function() {
       return marker = pointer;
     };
@@ -40,7 +32,6 @@
       reset: reset,
       advance: advance,
       getCurrent: getCurrent,
-      expect: expect,
       setMarker: setMarker,
       getMarked: getMarked
     };
