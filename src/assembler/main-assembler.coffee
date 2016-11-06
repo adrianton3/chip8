@@ -60,8 +60,14 @@ app.controller 'AssemblerController', ['$scope', '$http', ($scope, $http) ->
 
   setupEditor = ->
     editor = ace.edit 'editor'
+
+    editor.setOptions
+      enableBasicAutocompletion: true
+      enableLiveAutocompletion: true
+
     editor.getSession().setMode 'ace/mode/chip8'
     editor.setTheme 'ace/theme/monokai'
+
     editor.on 'input', -> onChange editor.getValue()
 
     editor.on('guttermousedown', (event) ->
