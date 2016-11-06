@@ -65,6 +65,8 @@ app.controller 'AssemblerController', ['$scope', '$http', ($scope, $http) ->
       enableBasicAutocompletion: true
       enableLiveAutocompletion: true
 
+    editor.$blockScrolling = Infinity
+
     editor.getSession().setMode 'ace/mode/chip8'
     editor.setTheme 'ace/theme/monokai'
 
