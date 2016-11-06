@@ -53,8 +53,14 @@
                 <tr><td>Stack:</td><td>{{assemblerController.emulatorState.stack}}</td></tr>
             </table>
 
+            <div class="editor-options">
+                <input
+                    type="checkbox"
+                    ng-click="assemblerController.toggleLiveAutocomplete()"
+                    ng-model="assemblerController.liveAutocomplete"
+                >Autocomplete
+            </div>
         </div>
-
     </div>
 
     <script src="../../lib/ace/ace.js"></script>

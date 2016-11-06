@@ -16,3 +16,7 @@
     background-color: hsl(212, 90%, 46%);
     color: hsl(212, 10%, 86%);
 }
+
+.editor-options {
+    margin-top: 80px;
+}

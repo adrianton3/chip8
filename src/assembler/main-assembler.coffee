@@ -26,6 +26,8 @@ app.controller 'AssemblerController', ['$scope', '$http', ($scope, $http) ->
 
   @emulatorState = null
 
+  @liveAutocomplete = (localStorage.getItem 'live-autocompletion') == 'true'
+
   assembler = Chip8Assembler()
 
   keyboard = Chip8Keyboard()
@@ -63,7 +65,7 @@ app.controller 'AssemblerController', ['$scope', '$http', ($scope, $http) ->
 
     editor.setOptions
       enableBasicAutocompletion: true
-      enableLiveAutocompletion: true
+      enableLiveAutocompletion: (localStorage.getItem 'live-autocompletion') == 'true'
 
     editor.$blockScrolling = Infinity
 
@@ -257,6 +259,11 @@ app.controller 'AssemblerController', ['$scope', '$http', ($scope, $http) ->
     @updateVideo()
     @updateMarker()
     return
+
+
+  @toggleLiveAutocomplete = ->
+    localStorage.setItem 'live-autocompletion', @liveAutocomplete
+    editor.setOption 'enableLiveAutocompletion', @liveAutocomplete
 
 
   return
