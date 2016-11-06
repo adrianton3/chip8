@@ -10,3 +10,13 @@
     z-index: 20;
     background-color: hsl(212, 90%, 16%);
 }
+
+.ace_gutter-cell.ace_breakpoint{
+    border-radius: 0 20px 20px 0;
+    background-color: hsl(212, 90%, 46%);
+    color: hsl(212, 10%, 86%);
+}
+
+.editor-options {
+    margin-top: 80px;
+}
