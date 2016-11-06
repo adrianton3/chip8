@@ -17,7 +17,10 @@ app.controller 'AssemblerController', ['$scope', '$http', ($scope, $http) ->
   errorLine = null
 
   lineMapping = null
+  reverseMapping = null
   marker = null
+  breakpoints = new Set
+  pausedAt = null
 
   @status = 'idle'
 
@@ -34,6 +37,7 @@ app.controller 'AssemblerController', ['$scope', '$http', ($scope, $http) ->
 
   onChange = (text) ->
     clearMarker()
+    clearBreakPoints()
     if text.length == 0
       editor.getSession().setAnnotations []
     else
@@ -59,10 +63,41 @@ app.controller 'AssemblerController', ['$scope', '$http', ($scope, $http) ->
     editor.getSession().setMode 'ace/mode/chip8'
     editor.setTheme 'ace/theme/monokai'
     editor.on 'input', -> onChange editor.getValue()
+
+    editor.on('guttermousedown', (event) ->
+      return unless event.domEvent.target.classList.contains 'ace_gutter-cell'
+
+      row = event.getDocumentPosition().row
+
+      if not reverseMapping?
+        { lineMapping } = assembler.assemble editor.getValue()
+        reverseMapping = makeReverseMapping lineMapping
+
+      if reverseMapping.has row
+        if breakpoints.has row
+          breakpoints.delete row
+          editor.session.clearBreakpoint row
+        else
+          breakpoints.add row
+          editor.session.setBreakpoint row
+
+      event.stop()
+      return
+    )
+
     return
 
 
   setupEditor()
+
+
+  clearBreakPoints = ->
+    breakpoints.forEach (row) ->
+      editor.session.clearBreakpoint row
+      return
+
+    breakpoints.clear()
+    return
 
 
   getEmulatorState = ->
@@ -96,6 +131,14 @@ app.controller 'AssemblerController', ['$scope', '$http', ($scope, $http) ->
     return
 
 
+  makeReverseMapping = (mapping) ->
+    reverse = new Map
+    mapping.forEach (value, key) ->
+      reverse.set value, key
+      return
+    reverse
+
+
   @clearMarker = clearMarker
 
 
@@ -119,10 +162,22 @@ app.controller 'AssemblerController', ['$scope', '$http', ($scope, $http) ->
 
 
   @startMainLoop = ->
-    return if rafId?
+    return if @status == 'running'
+    @status = 'running'
 
     mainLoop = =>
       for i in [0...TICKS_PER_FRAME]
+        programCounter = chip8.getProgramCounter()
+        if (breakpoints.has lineMapping.get programCounter) and pausedAt != programCounter
+          pausedAt = programCounter
+          @status = 'paused'
+          @updateEmulatorState()
+          @updateMarker()
+          $scope.$apply() unless $scope.$$phase
+
+          @updateVideo()
+          return
+
         chip8.tick()
 
       @updateEmulatorState()
@@ -145,7 +200,6 @@ app.controller 'AssemblerController', ['$scope', '$http', ($scope, $http) ->
 
   @start = ->
     @reset() if @status == 'idle'
-    @status = 'running'
     @clearMarker()
     @startMainLoop()
     return
@@ -160,6 +214,7 @@ app.controller 'AssemblerController', ['$scope', '$http', ($scope, $http) ->
 
   @stop = ->
     @status = 'idle'
+    pausedAt = null
     @stopMainLoop()
     return
 
@@ -171,6 +226,7 @@ app.controller 'AssemblerController', ['$scope', '$http', ($scope, $http) ->
     if text.length
       try
         { instructions, lineMapping } = assembler.assemble text
+        reverseMapping = makeReverseMapping lineMapping
         chip8.load instructions
       catch ex
 
@@ -187,6 +243,7 @@ app.controller 'AssemblerController', ['$scope', '$http', ($scope, $http) ->
   @step = ->
     @reset() if @status == 'idle'
     @status = 'paused'
+    pausedAt = null
     chip8.tick()
     @updateEmulatorState()
     @updateVideo()
