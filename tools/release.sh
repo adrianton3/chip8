@@ -8,4 +8,4 @@ git checkout gh-pages
 
 cp -r tmp/* .
 
-rmdir -rf tmp
+rm -rf tmp
