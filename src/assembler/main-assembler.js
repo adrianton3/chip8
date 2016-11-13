@@ -31,6 +31,7 @@
       chip8.setKeyboard(keyboard);
       onChange = function(text) {
         var ex;
+        localStorage.setItem('snippet', text);
         clearMarker();
         clearBreakPoints();
         if (text.length === 0) {
@@ -122,7 +123,11 @@
           };
         })(this));
       };
-      loadSample('sprites');
+      if ((localStorage.getItem('snippet')) != null) {
+        editor.setValue(localStorage.getItem('snippet'), -1);
+      } else {
+        loadSample('sprites');
+      }
       clearMarker = function() {
         if (marker != null) {
           editor.getSession().removeMarker(marker);
