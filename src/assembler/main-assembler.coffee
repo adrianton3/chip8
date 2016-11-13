@@ -38,6 +38,7 @@ app.controller 'AssemblerController', ['$scope', '$http', ($scope, $http) ->
 
 
   onChange = (text) ->
+    localStorage.setItem 'snippet', text
     clearMarker()
     clearBreakPoints()
     if text.length == 0
@@ -132,7 +133,10 @@ app.controller 'AssemblerController', ['$scope', '$http', ($scope, $http) ->
       editor.setValue source, -1
 
 
-  loadSample 'sprites'
+  if (localStorage.getItem 'snippet')?
+    editor.setValue (localStorage.getItem 'snippet'), -1
+  else
+    loadSample 'sprites'
 
 
   clearMarker = ->
