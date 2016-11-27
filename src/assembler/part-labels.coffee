@@ -7,4 +7,8 @@ partLabels =
 	BYTE: 'byte'
 	BYTE3: 'byte3'
 
-window.partLabels = partLabels
+
+window.Assembler ?= {}
+Object.assign(window.Assembler, {
+	partLabels
+})

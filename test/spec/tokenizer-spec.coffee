@@ -2,7 +2,7 @@
 
 describe 'tokenizer', ->
   tokenize = (string) ->
-    tokens = window.Chip8Tokenizer string
+    tokens = Assembler.tokenize string
     tokens.pop()
     tokens
 

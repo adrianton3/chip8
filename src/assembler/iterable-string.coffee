@@ -54,4 +54,8 @@ iterableString = (string_) ->
     getCoords
   }
 
-window.iterableString = iterableString
+
+window.Assembler ?= {}
+Object.assign(window.Assembler, {
+	iterableString
+})

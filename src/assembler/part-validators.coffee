@@ -1,5 +1,7 @@
 'use strict'
 
+{ partLabels } = Assembler
+
 { LABEL, REGISTER, WORD, BYTE, BYTE3 } = partLabels
 
 
@@ -42,4 +44,7 @@ partValidators[BYTE3] = (token) ->
 		raise "Expected a number between 0 and 7", token.coords
 
 
-window.partValidators = partValidators
+window.Assembler ?= {}
+Object.assign(window.Assembler, {
+	partValidators
+})

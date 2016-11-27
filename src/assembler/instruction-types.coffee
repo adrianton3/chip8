@@ -1,6 +1,6 @@
 'use strict'
 
-{ LABEL, REGISTER, WORD, BYTE, BYTE3 } = partLabels
+{ LABEL, REGISTER, WORD, BYTE, BYTE3 } = Assembler.partLabels
 
 instructionTypes = new Map
 
@@ -71,4 +71,7 @@ add_X__ 'load', 0xF000, 0x0065
 add 'dw', [WORD], (parts) -> parts[1].value
 
 
-window.instructionTypes = instructionTypes
+window.Assembler ?= {}
+Object.assign(window.Assembler, {
+	instructionTypes
+})

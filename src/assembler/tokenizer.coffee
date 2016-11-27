@@ -1,151 +1,155 @@
 'use strict'
 
-Chip8Tokenizer = (rawString) ->
+{ iterableString } = Assembler
 
-  number = (base) ->
-    (raw, coords) ->
-      type: 'number'
-      value: parseInt raw, base
-      coords: coords
-
-
-  numberDec = number 10
-
-  numberHex = number 16
-
-  numberBin = number 2
+number = (base) ->
+	(raw, coords) ->
+		type: 'number'
+		value: parseInt raw, base
+		coords: coords
 
 
-  identifier = (raw, coords) ->
-    type: 'identifier'
-    value: raw
-    coords: coords
+numberDec = number 10
+
+numberHex = number 16
+
+numberBin = number 2
 
 
-  label = (raw, coords) ->
-    type: 'label'
-    value: raw
-    coords: coords
+identifier = (raw, coords) ->
+	type: 'identifier'
+	value: raw
+	coords: coords
 
 
-  newLine = (coords) ->
-    type: 'newline'
-    coords: coords
+label = (raw, coords) ->
+	type: 'label'
+	value: raw
+	coords: coords
 
 
-  end = (coords) ->
-    type: 'end'
-    coords: coords
+newLine = (coords) ->
+	type: 'newline'
+	coords: coords
 
 
-  raise = (message, coords) ->
-    error = Error message
-    error.coords = coords
-    throw error
-    return
+end = (coords) ->
+	type: 'end'
+	coords: coords
 
 
-  chopNumberDec = (string) ->
-    string.setMarker()
-
-    while '0' <= string.getCurrent() <= '9'
-      string.advance()
-
-    current = string.getCurrent()
-    if current != ' ' and current != '\n'
-      raise "Unexpected character '#{current}'", string.getCoords()
-
-    numberDec string.getMarked(), string.getCoords()
+raise = (message, coords) ->
+	error = Error message
+	error.coords = coords
+	throw error
+	return
 
 
-  chopNumberHex = (string) ->
-    string.advance()
-    string.advance()
-    string.setMarker()
+chopNumberDec = (string) ->
+	string.setMarker()
 
-    while '0' <= string.getCurrent() <= '9' or 'A' <= string.getCurrent() <= 'F'
-      string.advance()
+	while '0' <= string.getCurrent() <= '9'
+		string.advance()
 
-    current = string.getCurrent()
-    if current != ' ' and current != '\n'
-      raise "Unexpected character '#{current}'", string.getCoords()
+	current = string.getCurrent()
+	if current != ' ' and current != '\n'
+		raise "Unexpected character '#{current}'", string.getCoords()
 
-    rawNumber = string.getMarked()
-    if rawNumber.length == 0
-      raise "Encountered malformed number", string.getCoords()
-    numberHex rawNumber, string.getCoords()
+	numberDec string.getMarked(), string.getCoords()
 
 
-  chopNumberBin = (string) ->
-    string.advance()
-    string.advance()
-    string.setMarker()
+chopNumberHex = (string) ->
+	string.advance()
+	string.advance()
+	string.setMarker()
 
-    while '0' <= string.getCurrent() <= '1'
-      string.advance()
+	while '0' <= string.getCurrent() <= '9' or 'A' <= string.getCurrent() <= 'F'
+		string.advance()
 
-    current = string.getCurrent()
-    if current != ' ' and current != '\n'
-      raise "Unexpected character '#{current}'", string.getCoords()
+	current = string.getCurrent()
+	if current != ' ' and current != '\n'
+		raise "Unexpected character '#{current}'", string.getCoords()
 
-    rawNumber = string.getMarked()
-    if rawNumber.length == 0
-      raise "Encountered malformed number", string.getCoords()
-    numberBin rawNumber, string.getCoords()
-
-
-  chopIdentifier = (string) ->
-    string.setMarker()
-
-    while 'a' <= string.getCurrent() <= 'z' or 'A' <= string.getCurrent() <= 'Z' or '0' <= string.getCurrent() <= '9'
-      string.advance()
-
-    if string.getCurrent() == ':'
-      string.advance()
-      label (string.getMarked -1), string.getCoords()
-    else
-      identifier string.getMarked(), string.getCoords()
+	rawNumber = string.getMarked()
+	if rawNumber.length == 0
+		raise "Encountered malformed number", string.getCoords()
+	numberHex rawNumber, string.getCoords()
 
 
-  chopComment = (string) ->
-    while string.getCurrent() != '\n' and string.hasNext()
-      string.advance()
-    return
+chopNumberBin = (string) ->
+	string.advance()
+	string.advance()
+	string.setMarker()
+
+	while '0' <= string.getCurrent() <= '1'
+		string.advance()
+
+	current = string.getCurrent()
+	if current != ' ' and current != '\n'
+		raise "Unexpected character '#{current}'", string.getCoords()
+
+	rawNumber = string.getMarked()
+	if rawNumber.length == 0
+		raise "Encountered malformed number", string.getCoords()
+	numberBin rawNumber, string.getCoords()
 
 
-  chop = (string) ->
-    tokens = []
+chopIdentifier = (string) ->
+	string.setMarker()
 
-    while string.hasNext()
-      currentChar = string.getCurrent()
+	while 'a' <= string.getCurrent() <= 'z' or 'A' <= string.getCurrent() <= 'Z' or '0' <= string.getCurrent() <= '9'
+		string.advance()
 
-      if '1' <= currentChar <= '9'
-        tokens.push chopNumberDec string
-      else if currentChar == '0'
-        next = string.getNext()
-        switch next
-          when 'x'
-            tokens.push chopNumberHex string
-          when 'b'
-            tokens.push chopNumberBin string
-          else
-            tokens.push chopNumberDec string
-      else if 'a' <= currentChar <= 'z' or 'A' <= currentChar <= 'F'
-        tokens.push chopIdentifier string
-      else if currentChar == ';'
-        chopComment string
-      else if currentChar == '\n'
-        tokens.push newLine string.getCoords()
-        string.advance()
-      else
-        string.advance()
-
-    tokens.push end string.getCoords()
-
-    tokens
+	if string.getCurrent() == ':'
+		string.advance()
+		label (string.getMarked -1), string.getCoords()
+	else
+		identifier string.getMarked(), string.getCoords()
 
 
-  chop iterableString rawString
+chopComment = (string) ->
+	while string.getCurrent() != '\n' and string.hasNext()
+		string.advance()
+	return
 
 
-window.Chip8Tokenizer = Chip8Tokenizer
+chop = (string) ->
+	tokens = []
+
+	while string.hasNext()
+		currentChar = string.getCurrent()
+
+		if '1' <= currentChar <= '9'
+			tokens.push chopNumberDec string
+		else if currentChar == '0'
+			next = string.getNext()
+			switch next
+				when 'x'
+					tokens.push chopNumberHex string
+				when 'b'
+					tokens.push chopNumberBin string
+				else
+					tokens.push chopNumberDec string
+		else if 'a' <= currentChar <= 'z' or 'A' <= currentChar <= 'F'
+			tokens.push chopIdentifier string
+		else if currentChar == ';'
+			chopComment string
+		else if currentChar == '\n'
+			tokens.push newLine string.getCoords()
+			string.advance()
+		else
+			string.advance()
+
+	tokens.push end string.getCoords()
+
+	tokens
+
+
+tokenize = (rawString) ->
+	chop iterableString rawString
+
+
+window.Assembler ?= {}
+Object.assign(window.Assembler, {
+	tokenize
+})

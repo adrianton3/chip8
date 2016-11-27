@@ -1,8 +1,7 @@
 'use strict'
 
 describe 'assembler', ->
-	assembler = window.Chip8Assembler()
-	{ assemble } = assembler
+	{ assemble } = Assembler
 
 	instructions = (code) -> (assemble code).instructions
 
