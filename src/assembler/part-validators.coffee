@@ -16,32 +16,26 @@ partValidators = {}
 
 
 partValidators[LABEL] = (token, labels) ->
-	unless token.type == 'identifier'
-		raise "Expected a label", token.coords
+	return 'expect-label' unless token.type == 'identifier'
 
-	unless labels.has token.value
-		raise "Label #{token.value} has not been declared", token.coords
+	return 'undeclared-label' unless labels.has token.value
 
 
 registerRegex = /^v[0-9A-F]$/
 partValidators[REGISTER] = (token) ->
-	unless token.type == 'identifier' and registerRegex.test token.value
-		raise "Expected a register", token.coords
+	return 'expect-register' unless token.type == 'identifier' and registerRegex.test token.value
 
 
 partValidators[WORD] = (token) ->
-	unless token.type == 'number' and +token.value < 256 * 256
-		raise "Expected a word", token.coords
+	return 'expect-word' unless token.type == 'number' and +token.value < 256 * 256
 
 
 partValidators[BYTE] = (token) ->
-	unless token.type == 'number' and +token.value < 256
-		raise "Expected a byte", token.coords
+	return 'expect-byte' unless token.type == 'number' and +token.value < 256
 
 
 partValidators[BYTE3] = (token) ->
-	unless token.type == 'number' and +token.value < 8
-		raise "Expected a number between 0 and 7", token.coords
+	return 'expect-triad' unless token.type == 'number' and +token.value < 8
 
 
 window.Assembler ?= {}

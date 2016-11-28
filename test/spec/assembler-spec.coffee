@@ -74,11 +74,17 @@ describe 'assembler', ->
 
 			it 'throws an exception if register is missing', ->
 				expect -> instructions 'sei v 31'
-				.toThrow Error 'Expected a register'
+				.toThrow Error """
+					Expected a register
+					Hint: instruction sei takes register,byte
+				"""
 
 			it 'throws an exception if value is missing', ->
 				expect -> instructions 'sei v0'
-				.toThrow Error 'Expected a byte'
+				.toThrow Error """
+					Expected a byte
+					Hint: instruction sei takes register,byte
+				"""
 
 
 		describe 'dw', ->
@@ -88,7 +94,10 @@ describe 'assembler', ->
 
 			it 'throws an exception if value is too high', ->
 				expect -> instructions 'dw 0x12345'
-				.toThrow Error 'Expected a word'
+				.toThrow Error """
+					Expected a word
+					Hint: instruction dw takes word
+				"""
 
 
 	describe 'lineMapping', ->

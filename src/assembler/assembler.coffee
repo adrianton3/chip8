@@ -5,13 +5,23 @@
 	partValidators
 	tokenize
 	tokenList
+	formatError
 } = Assembler
 
 
 raise = (message, coords) ->
-	error = Error message
-	error.coords = coords
-	throw error
+	if typeof message == 'string'
+		error = Error message
+		error.coords = coords
+		throw error
+	else
+		error = Error """
+			#{message.message}
+			Hint: #{message.help}
+		"""
+		error.coords = message.coords
+		throw error
+
 	return
 
 
@@ -28,7 +38,12 @@ parseInstruction = (tokens, labels) ->
 	expectedParts = instructionType.expectedParts
 	expectedParts.forEach (expectedPart, index) ->
 		partValidator = partValidators[expectedParts[index]]
-		partValidator tokens.getCurrent(), labels
+		token = tokens.getCurrent()
+		result = partValidator token, labels
+		if result?
+			pretty = formatError result, { labels, instruction, token }
+			raise pretty
+
 		tokens.advance()
 		return
 
