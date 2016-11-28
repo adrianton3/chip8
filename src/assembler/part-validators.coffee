@@ -2,7 +2,7 @@
 
 { partLabels } = Assembler
 
-{ LABEL, REGISTER, WORD, BYTE, BYTE3 } = partLabels
+{ LABEL, REGISTER, WORD, BYTE, TRIAD } = partLabels
 
 
 raise = (message, coords) ->
@@ -34,7 +34,7 @@ partValidators[BYTE] = (token) ->
 	return 'expect-byte' unless token.type == 'number' and +token.value < 256
 
 
-partValidators[BYTE3] = (token) ->
+partValidators[TRIAD] = (token) ->
 	return 'expect-triad' unless token.type == 'number' and +token.value < 8
 
 

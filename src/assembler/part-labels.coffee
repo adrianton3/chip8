@@ -5,7 +5,7 @@ partLabels =
 	REGISTER: 'register'
 	WORD: 'word'
 	BYTE: 'byte'
-	BYTE3: 'byte3'
+	TRIAD: 'triad'
 
 
 window.Assembler ?= {}

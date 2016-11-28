@@ -1,6 +1,6 @@
 'use strict'
 
-{ LABEL, REGISTER, WORD, BYTE, BYTE3 } = Assembler.partLabels
+{ LABEL, REGISTER, WORD, BYTE, TRIAD } = Assembler.partLabels
 
 instructionTypes = new Map
 
@@ -52,7 +52,7 @@ add_NNN 'jumpoff', 0xB000
 add_XNN 'rnd', 0xC000
 
 # _XYN
-add 'sprite', [REGISTER, REGISTER, BYTE3], (parts) ->
+add 'sprite', [REGISTER, REGISTER, TRIAD], (parts) ->
 	0xD000 | ((parseInt parts[1].value[1], 16) << 8) | ((parseInt parts[2].value[1], 16) << 4) | (parseInt parts[3].value)
 
 add_X__ 'skr', 0xE000, 0x009E
