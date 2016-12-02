@@ -30,7 +30,8 @@ parseInstruction = (tokens, labels) ->
 	tokens.setMarker()
 	instruction = token.value
 	if not instructionTypes.has instruction
-		raise "Unrecognised instruction #{instruction} in line #{token.coords.line}", token.coords
+		pretty = formatError 'bad-instruction', { token }
+		raise pretty
 
 	instructionType = instructionTypes.get instruction
 	tokens.advance()

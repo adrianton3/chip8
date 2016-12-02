@@ -6,6 +6,28 @@
 formatters = new Map
 
 
+findSimilar = (haystack, needle) ->
+	matches = []
+
+	haystack.forEach (address, candidate) ->
+		if candidate.startsWith needle
+			matches.push candidate
+		return
+
+	haystack.forEach (address, candidate) ->
+		if candidate.endsWith needle
+			matches.push candidate
+		return
+
+	matches.slice 0, 3
+
+
+formatters.set 'bad-instruction', ({ token }) ->
+	message: "Unrecognised instruction #{token.value}"
+	help: "similarly named instruction: #{findSimilar instructionTypes, token.value}"
+	coords: token.coords
+
+
 formatParameters = (instruction) ->
 	{ expectedParts } = instructionTypes.get instruction
 	expectedParts.join ','
@@ -27,22 +49,6 @@ formatters.set 'expect-byte', makePartTypeFormatter 'byte'
 formatters.set 'expect-triad', makePartTypeFormatter 'triad (3 bit number)'
 
 formatters.set 'expect-register', makePartTypeFormatter 'register'
-
-
-findSimilarLabels = (labels, candidate) ->
-	matches = []
-
-	labels.forEach (address, label) ->
-		if label.startsWith candidate
-			matches.push label
-		return
-
-	labels.forEach (address, label) ->
-		if label.endsWith candidate
-			matches.push label
-		return
-
-	matches.slice 0, 3
 
 
 formatters.set 'undeclared-label', ({ token, labels }) ->
