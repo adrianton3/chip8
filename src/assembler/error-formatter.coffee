@@ -23,8 +23,14 @@ findSimilar = (haystack, needle) ->
 
 
 formatters.set 'bad-instruction', ({ token }) ->
+	list = findSimilar instructionTypes, token.value
+	help = if list.length > 0
+		"similarly named instructions: #{list.join ', '}"
+	else
+		"no similarly named instructions found"
+
 	message: "Unrecognised instruction #{token.value}"
-	help: "similarly named instruction: #{findSimilar instructionTypes, token.value}"
+	help: help
 	coords: token.coords
 
 
@@ -52,8 +58,14 @@ formatters.set 'expect-register', makePartTypeFormatter 'register'
 
 
 formatters.set 'undeclared-label', ({ token, labels }) ->
+	list = findSimilar labels, token.value
+	help = if list.length > 0
+		"similarly named labels: #{list.join ', '}"
+	else
+		"no similarly named labels found"
+
 	message: "Label #{token.value} has not been declared"
-	help: "similarly named labels: #{findSimilarLabels labels, token.value}"
+	help: help
 	coords: token.coords
 
 
