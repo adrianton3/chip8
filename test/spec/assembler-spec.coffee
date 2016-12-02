@@ -76,14 +76,14 @@ describe 'assembler', ->
 				expect -> instructions 'sei v 31'
 				.toThrow Error """
 					Expected a register
-					Hint: instruction sei takes register,byte
+					Hint: instruction sei takes register and byte
 				"""
 
 			it 'throws an exception if value is missing', ->
 				expect -> instructions 'sei v0'
 				.toThrow Error """
 					Expected a byte
-					Hint: instruction sei takes register,byte
+					Hint: instruction sei takes register and byte
 				"""
 
 
