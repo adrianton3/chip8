@@ -22,10 +22,18 @@ findSimilar = (haystack, needle) ->
 	matches.slice 0, 3
 
 
+formatList = (list) ->
+	if list.length == 1
+		list[0]
+	else
+		[init..., last] = list
+		"#{init.join ', '} and #{last}"
+
+
 formatters.set 'bad-instruction', ({ token }) ->
 	list = findSimilar instructionTypes, token.value
 	help = if list.length > 0
-		"similarly named instructions: #{list.join ', '}"
+		"similarly named instructions: #{formatList list}"
 	else
 		"no similarly named instructions found"
 
@@ -36,7 +44,7 @@ formatters.set 'bad-instruction', ({ token }) ->
 
 formatParameters = (instruction) ->
 	{ expectedParts } = instructionTypes.get instruction
-	expectedParts.join ','
+	formatList expectedParts
 
 
 makePartTypeFormatter = (type) ->
@@ -60,7 +68,7 @@ formatters.set 'expect-register', makePartTypeFormatter 'register'
 formatters.set 'undeclared-label', ({ token, labels }) ->
 	list = findSimilar labels, token.value
 	help = if list.length > 0
-		"similarly named labels: #{list.join ', '}"
+		"similarly named labels: #{formatList list}"
 	else
 		"no similarly named labels found"
 
