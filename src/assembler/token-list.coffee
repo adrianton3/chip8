@@ -41,4 +41,8 @@ tokenList = (tokens_) ->
     getMarked
   }
 
-window.tokenList = tokenList
+
+window.Assembler ?= {}
+Object.assign(window.Assembler, {
+	tokenList
+})

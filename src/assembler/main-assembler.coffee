@@ -28,7 +28,7 @@ app.controller 'AssemblerController', ['$scope', '$http', ($scope, $http) ->
 
   @liveAutocomplete = (localStorage.getItem 'live-autocompletion') == 'true'
 
-  assembler = Chip8Assembler()
+  { assemble } = Assembler
 
   keyboard = Chip8Keyboard()
   (document.getElementById 'container').appendChild keyboard.getHtml()
@@ -45,7 +45,7 @@ app.controller 'AssemblerController', ['$scope', '$http', ($scope, $http) ->
       editor.getSession().setAnnotations []
     else
       try
-        assembler.assemble text
+        assemble text
         if errorLine != null
           editor.getSession().setAnnotations []
           errorLine = null
@@ -81,7 +81,7 @@ app.controller 'AssemblerController', ['$scope', '$http', ($scope, $http) ->
       row = event.getDocumentPosition().row
 
       if not reverseMapping?
-        { lineMapping } = assembler.assemble editor.getValue()
+        { lineMapping } = assemble editor.getValue()
         reverseMapping = makeReverseMapping lineMapping
 
       if reverseMapping.has row
@@ -239,7 +239,7 @@ app.controller 'AssemblerController', ['$scope', '$http', ($scope, $http) ->
     text = editor.getValue()
     if text.length
       try
-        { instructions, lineMapping } = assembler.assemble text
+        { instructions, lineMapping } = assemble text
         reverseMapping = makeReverseMapping lineMapping
         chip8.load instructions
       catch ex
